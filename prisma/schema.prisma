@@ -1,0 +1,381 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  STORE_ADMIN
+  STORE_STAFF
+}
+
+enum AttributeFieldType {
+  TEXT
+  NUMBER
+  SELECT
+  MULTISELECT
+}
+
+enum OrderStatus {
+  PENDING
+  SOLD
+  CANCELLED
+}
+
+enum StockMovementType {
+  MANUAL_DECREASE
+  MANUAL_INCREASE
+  STOCK_SET
+  ORDER_DECREASE
+  ORDER_RESTORE
+}
+
+enum ProductImportStatus {
+  PREVIEW
+  CONFIRMED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  CASH
+  PIX
+  DEBIT_CARD
+  CREDIT_CARD
+  BANK_TRANSFER
+  OTHER
+}
+
+enum FiscalStatus {
+  NOT_ISSUED
+  READY_TO_ISSUE
+  ISSUED
+  CANCELLED
+  ERROR
+}
+
+model User {
+  id           String     @id @default(cuid())
+  name         String
+  email        String     @unique
+  passwordHash String
+  role         UserRole
+  storeId      String?
+  isActive     Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  store        Store?     @relation(fields: [storeId], references: [id], onDelete: SetNull)
+  auditLogs    AuditLog[]
+  stockMovements StockMovement[]
+  productImportSessions ProductImportSession[]
+
+  @@index([storeId, role])
+}
+
+model Store {
+  id             String       @id @default(cuid())
+  name           String
+  slug           String       @unique
+  description    String?
+  logoUrl        String?
+  bannerUrl      String?
+  whatsappNumber String
+  email          String?
+  phone          String?
+  address        String?
+  primaryColor   String       @default("#0f172a")
+  secondaryColor String       @default("#f97316")
+  accentColor    String       @default("#22c55e")
+  themeMode      String       @default("light")
+  accessMode     String       @default("FULL")
+  catalogUsesImages Boolean   @default(true)
+  catalogProfile  String       @default("CUSTOM")
+  productAttributesJson String?
+  status         Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  users          User[]
+  categories     Category[]
+  products       Product[]
+  orders         Order[]
+  customers      Customer[]
+  auditLogs      AuditLog[]
+  stockMovements StockMovement[]
+  productImportSessions ProductImportSession[]
+}
+
+model Category {
+  id                    String                    @id @default(cuid())
+  storeId               String
+  name                  String
+  slug                  String
+  description           String?
+  imageUrl              String?
+  sortOrder             Int                       @default(0)
+  isActive              Boolean                   @default(true)
+  useStock              Boolean                   @default(false)
+  useColor              Boolean                   @default(false)
+  useSize               Boolean                   @default(false)
+  useFabric             Boolean                   @default(false)
+  useDescription        Boolean                   @default(true)
+  allowCustomAttributes Boolean                   @default(false)
+  variantGroupsJson     String?
+  createdAt             DateTime                  @default(now())
+  updatedAt             DateTime                  @updatedAt
+  store                 Store                     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  attributes            CategoryCustomAttribute[]
+  products              Product[]
+
+  @@unique([storeId, slug])
+  @@index([storeId, isActive, sortOrder])
+}
+
+model CategoryCustomAttribute {
+  id         String                     @id @default(cuid())
+  categoryId String
+  name       String
+  fieldType  AttributeFieldType
+  isRequired Boolean                    @default(false)
+  optionsJson String?
+  createdAt  DateTime                   @default(now())
+  updatedAt  DateTime                   @updatedAt
+  category   Category                   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  values     ProductCustomAttributeValue[]
+
+  @@index([categoryId])
+}
+
+model Product {
+  id                String                       @id @default(cuid())
+  storeId           String
+  categoryId        String
+  name              String
+  slug              String
+  shortDescription  String?
+  fullDescription   String?
+  brandSupplier     String?
+  attributesJson    String?
+  sku               String?
+  barcode           String?
+  price             Decimal                      @db.Decimal(10, 2)
+  promotionalPrice  Decimal?                     @db.Decimal(10, 2)
+  costPrice         Decimal?                     @db.Decimal(10, 2)
+  profitMarginPercent Decimal?                   @db.Decimal(7, 2)
+  imageUrl          String?
+  galleryJson       String?
+  isActive          Boolean                      @default(true)
+  isFeatured        Boolean                      @default(false)
+  trackStock        Boolean                      @default(false)
+  stockQuantity     Int?
+  color             String?
+  size              String?
+  fabric            String?
+  weight            String?
+  notes             String?
+  createdAt         DateTime                     @default(now())
+  updatedAt         DateTime                     @updatedAt
+  store             Store                        @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  category          Category                     @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  customValues      ProductCustomAttributeValue[]
+  variants          ProductVariant[]
+  orderItems        OrderItem[]
+  stockMovements    StockMovement[]
+
+  @@unique([storeId, slug])
+  @@index([storeId, isActive])
+  @@index([storeId, isActive, isFeatured, createdAt])
+  @@index([storeId, categoryId, isActive, isFeatured, createdAt])
+  @@index([storeId, trackStock, stockQuantity])
+  @@index([storeId, sku])
+  @@index([storeId, barcode])
+  @@index([storeId, createdAt])
+  @@index([categoryId])
+}
+
+model ProductVariant {
+  id                   String          @id @default(cuid())
+  productId            String
+  label                String
+  sku                  String?
+  barcode              String?
+  imageUrl             String?
+  priceOverride        Decimal?        @db.Decimal(10, 2)
+  promotionalPriceOverride Decimal?    @db.Decimal(10, 2)
+  discountPercent      Decimal?        @db.Decimal(7, 2)
+  costPriceOverride    Decimal?        @db.Decimal(10, 2)
+  stockQuantity        Int             @default(0)
+  isActive             Boolean         @default(true)
+  attributesJson       String
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+  product              Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  orderItems           OrderItem[]
+  stockMovements       StockMovement[]
+
+  @@index([productId, isActive])
+  @@index([productId, isActive, createdAt])
+  @@index([barcode])
+}
+
+model Customer {
+  id             String   @id @default(cuid())
+  storeId        String
+  name           String
+  phone          String?
+  email          String?
+  document       String?
+  address        String?
+  number         String?
+  district       String?
+  city           String?
+  complement     String?
+  reference      String?
+  notes          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  store          Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  orders         Order[]
+
+  @@index([storeId, name])
+  @@index([storeId, phone])
+}
+
+model ProductCustomAttributeValue {
+  id          String                  @id @default(cuid())
+  productId   String
+  attributeId String
+  valueText   String
+  createdAt   DateTime                @default(now())
+  updatedAt   DateTime                @updatedAt
+  product     Product                 @relation(fields: [productId], references: [id], onDelete: Cascade)
+  attribute   CategoryCustomAttribute @relation(fields: [attributeId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, attributeId])
+  @@index([attributeId])
+}
+
+model Order {
+  id                  String       @id @default(cuid())
+  storeId             String
+  customerId          String?
+  customerName        String
+  customerPhone       String
+  deliveryAddress     String
+  deliveryNumber      String?
+  deliveryDistrict    String
+  deliveryCity        String
+  deliveryComplement  String?
+  deliveryReference   String?
+  notes               String?
+  subtotal            Decimal      @db.Decimal(10, 2)
+  paymentMethod       PaymentMethod?
+  paymentNotes        String?
+  fiscalStatus        FiscalStatus @default(NOT_ISSUED)
+  fiscalDocumentNumber String?
+  fiscalAccessKey     String?
+  fiscalError         String?
+  whatsappSentAt      DateTime?
+  status              OrderStatus  @default(PENDING)
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  store               Store        @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  customer            Customer?    @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  items               OrderItem[]
+  stockMovements      StockMovement[]
+
+  @@index([storeId, status])
+  @@index([storeId, status, createdAt])
+  @@index([storeId, createdAt])
+  @@index([customerId])
+}
+
+model OrderItem {
+  id                     String   @id @default(cuid())
+  orderId                String
+  productId              String?
+  productVariantId       String?
+  productNameSnapshot    String
+  productVariantLabelSnapshot String?
+  quantity               Int
+  unitPrice              Decimal  @db.Decimal(10, 2)
+  costPriceSnapshot      Decimal? @db.Decimal(10, 2)
+  profitSnapshot         Decimal? @db.Decimal(10, 2)
+  attributesSnapshotJson String?
+  createdAt              DateTime @default(now())
+  order                  Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product                Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  productVariant         ProductVariant? @relation(fields: [productVariantId], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+  @@index([orderId, productId])
+  @@index([productId])
+  @@index([productId, orderId])
+  @@index([productVariantId])
+  @@index([productVariantId, orderId])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  storeId    String?
+  action     String
+  entityType String
+  entityId   String?
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  store      Store?   @relation(fields: [storeId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+  @@index([storeId, createdAt])
+}
+
+model ProductImportSession {
+  id               String              @id @default(cuid())
+  storeId          String
+  userId           String
+  originalFileName String
+  status           ProductImportStatus @default(PREVIEW)
+  previewJson      String
+  summaryJson      String?
+  confirmedAt      DateTime?
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+  store            Store               @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  user             User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([storeId, createdAt])
+  @@index([userId, createdAt])
+}
+
+model StockMovement {
+  id             String            @id @default(cuid())
+  storeId        String
+  productId      String
+  productVariantId String?
+  userId         String?
+  orderId        String?
+  type           StockMovementType
+  quantity       Int
+  quantityBefore Int
+  quantityAfter  Int
+  variantLabelSnapshot String?
+  notes          String?
+  createdAt      DateTime          @default(now())
+  store          Store             @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  product        Product           @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productVariant ProductVariant?   @relation(fields: [productVariantId], references: [id], onDelete: SetNull)
+  user           User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
+  order          Order?            @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  @@index([storeId, createdAt])
+  @@index([storeId, type, createdAt])
+  @@index([productId, createdAt])
+  @@index([productVariantId, createdAt])
+  @@index([orderId])
+}

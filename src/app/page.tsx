@@ -1,65 +1,93 @@
-import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight, LayoutDashboard, ShoppingBag, Store } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(249,115,22,0.18),_transparent_28%),radial-gradient(circle_at_bottom_right,_rgba(34,197,94,0.12),_transparent_22%),linear-gradient(180deg,#fff7ed_0%,#e2e8f0_100%)] px-4 py-10">
+      <div className="mx-auto flex max-w-7xl flex-col gap-10">
+        <section className="overflow-hidden rounded-[40px] bg-slate-950 p-8 text-white shadow-[0_40px_120px_rgba(15,23,42,0.45)] lg:p-12">
+          <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
+            <div>
+              <p className="text-sm uppercase tracking-[0.45em] text-orange-300">
+                Catalogo comercial premium
+              </p>
+              <h1 className="mt-4 max-w-3xl text-4xl font-semibold leading-tight lg:text-6xl">
+                Sua vitrine online pronta para atender clientes com rapidez e elegancia.
+              </h1>
+              <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-300">
+                Organize produtos, apresente ofertas e receba pedidos pelo WhatsApp em uma
+                experiencia simples para a loja e agradavel para o cliente.
+              </p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Link
+                  href="/login"
+                  className="inline-flex items-center gap-2 rounded-full bg-orange-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-400"
+                >
+                  Acessar painel
+                  <ArrowRight className="size-4" />
+                </Link>
+                <Link
+                  href="/loja/casa-aurora-moda"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/15 px-5 py-3 text-sm font-semibold text-white transition hover:border-orange-300 hover:text-orange-200"
+                >
+                  Ver catalogo
+                  <ShoppingBag className="size-4" />
+                </Link>
+              </div>
+            </div>
+
+            <div className="grid gap-4 rounded-[32px] border border-white/10 bg-white/5 p-6 backdrop-blur">
+              <div className="rounded-3xl bg-white/8 p-5">
+                <p className="text-sm text-slate-300">Gestao centralizada</p>
+                <p className="mt-2 text-lg font-semibold">Lojas, produtos e relatorios</p>
+                <p className="text-sm text-orange-200">Tudo em um painel claro</p>
+              </div>
+              <div className="rounded-3xl bg-white/8 p-5">
+                <p className="text-sm text-slate-300">Catalogos por perfil</p>
+                <p className="mt-2 text-lg font-semibold">Moda, beleza, bebidas e mais</p>
+                <p className="text-sm text-emerald-200">Campos adaptados para cada loja</p>
+              </div>
+              <div className="rounded-3xl bg-white/8 p-5">
+                <p className="text-sm text-slate-300">Atendimento direto</p>
+                <p className="mt-2 text-lg font-semibold">Compra pelo WhatsApp</p>
+                <p className="text-sm text-slate-300">Carrinho, variacoes e pedido formatado</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="grid gap-6 md:grid-cols-3">
+          {[
+            {
+              icon: Store,
+              title: "Multi-tenant real",
+              description:
+                "Cada loja trabalha no proprio ambiente, com dados separados e acesso seguro.",
+            },
+            {
+              icon: LayoutDashboard,
+              title: "Operacao simplificada",
+              description:
+                "Cadastro rapido, catalogo personalizavel e rotina diaria mais objetiva.",
+            },
+            {
+              icon: ShoppingBag,
+              title: "Venda rapida",
+              description:
+                "O cliente escolhe, monta o pedido e chama a loja pelo WhatsApp em poucos toques.",
+            },
+          ].map((item) => (
+            <article
+              key={item.title}
+              className="rounded-[30px] bg-white p-6 shadow-[0_25px_60px_rgba(15,23,42,0.08)]"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+              <item.icon className="size-10 text-orange-500" />
+              <h2 className="mt-5 text-2xl font-semibold text-slate-950">{item.title}</h2>
+              <p className="mt-3 text-sm leading-7 text-slate-600">{item.description}</p>
+            </article>
+          ))}
+        </section>
+      </div>
+    </main>
   );
 }
