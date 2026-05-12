@@ -1,8 +1,9 @@
 "use server";
 
+import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
 
-import { requireStoreUser } from "@/lib/auth";
+import { requireStoreUser, verifyPassword } from "@/lib/auth";
 import {
   createStoreCategory,
   deleteStoreCategory,
@@ -1049,4 +1050,73 @@ export async function createManualSaleAction(
       resetToken: Date.now(),
     };
   }
+}
+
+export async function changePasswordAction(
+  formData: FormData,
+): Promise<MutationActionResult> {
+  const user = await requireStoreUser();
+  const currentPassword = String(formData.get("currentPassword") ?? "").trim();
+  const newPassword = String(formData.get("newPassword") ?? "").trim();
+  const confirmPassword = String(formData.get("confirmPassword") ?? "").trim();
+
+  if (!currentPassword || !newPassword || !confirmPassword) {
+    return { status: "error", message: "Preencha todos os campos.", resetToken: Date.now() };
+  }
+
+  if (newPassword.length < 6) {
+    return { status: "error", message: "A nova senha precisa ter pelo menos 6 caracteres.", resetToken: Date.now() };
+  }
+
+  if (newPassword !== confirmPassword) {
+    return { status: "error", message: "A confirmacao de senha nao confere.", resetToken: Date.now() };
+  }
+
+  const dbUser = await prisma.user.findUnique({
+    where: { id: user.id },
+    select: { passwordHash: true },
+  });
+
+  if (!dbUser) {
+    return { status: "error", message: "Usuario nao encontrado.", resetToken: Date.now() };
+  }
+
+  const valid = await verifyPassword(currentPassword, dbUser.passwordHash);
+
+  if (!valid) {
+    return { status: "error", message: "Senha atual incorreta.", resetToken: Date.now() };
+  }
+
+  const newHash = await bcrypt.hash(newPassword, 10);
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { passwordHash: newHash },
+  });
+
+  return { status: "success", message: "Senha alterada com sucesso.", resetToken: Date.now() };
+}
+
+export async function reorderCategoriesAction(
+  orderedIds: string[],
+): Promise<MutationActionResult> {
+  const user = await requireStoreUser();
+
+  if (!user.storeId || !orderedIds.length) {
+    return { status: "error", message: "Dados invalidos.", resetToken: Date.now() };
+  }
+
+  await prisma.$transaction(
+    orderedIds.map((id, index) =>
+      prisma.category.updateMany({
+        where: { id, storeId: user.storeId! },
+        data: { sortOrder: index },
+      }),
+    ),
+  );
+
+  revalidatePath("/painel/categorias");
+  revalidatePath(`/loja/${user.store?.slug}`);
+
+  return { status: "success", message: "Ordem salva.", resetToken: Date.now() };
 }

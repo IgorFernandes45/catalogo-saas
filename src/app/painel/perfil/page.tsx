@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 
+import { ChangePasswordForm } from "@/components/shared/change-password-form";
 import { StoreProfileForm } from "@/components/shared/store-profile-form";
 import { requireStoreUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -23,6 +24,7 @@ export default async function StoreProfilePage() {
         </h1>
       </div>
       <StoreProfileForm store={store} />
+      <ChangePasswordForm />
     </div>
   );
 }

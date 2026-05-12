@@ -358,6 +358,12 @@ export function StorefrontClient({
   }, [lastAddedName]);
 
   useEffect(() => {
+    if (cartOnly && isHydrated && cart.length === 0) {
+      window.location.replace(`/loja/${store.slug}`);
+    }
+  }, [cartOnly, isHydrated, cart.length, store.slug]);
+
+  useEffect(() => {
     if (cartOnly || (!isCartOpen && !selectedProduct)) {
       return;
     }
@@ -1218,7 +1224,12 @@ export function StorefrontClient({
                 return (
                   <article
                     key={product.id}
-                    className="group min-w-0 overflow-hidden rounded-[24px] border border-white/70 bg-white/95 p-2 shadow-[0_18px_42px_rgba(15,23,42,0.08)] backdrop-blur transition duration-300 hover:-translate-y-1 sm:rounded-[30px] sm:p-3 sm:shadow-[0_22px_55px_rgba(15,23,42,0.08)]"
+                    className={cn(
+                      "group min-w-0 overflow-hidden rounded-[24px] border bg-white/95 p-2 shadow-[0_18px_42px_rgba(15,23,42,0.08)] backdrop-blur transition duration-300 sm:rounded-[30px] sm:p-3 sm:shadow-[0_22px_55px_rgba(15,23,42,0.08)]",
+                      productHasStock
+                        ? "border-white/70 hover:-translate-y-1"
+                        : "border-slate-200/60 opacity-70",
+                    )}
                   >
                     <div className="grid min-w-0 gap-3 sm:block">
                       <button
@@ -1246,16 +1257,22 @@ export function StorefrontClient({
                             </div>
 
                             <div className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-end gap-3 p-2.5">
-                              <span
-                                className="rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-white shadow-lg"
-                                style={{
-                                  backgroundColor: product.promotionalPrice
-                                    ? store.accentColor
-                                    : "rgba(15,23,42,0.68)",
-                                }}
-                              >
-                                {product.promotionalPrice ? `-${discountPercentage}%` : "Ver"}
-                              </span>
+                              {!productHasStock ? (
+                                <span className="rounded-full bg-slate-900/80 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-white shadow-lg">
+                                  Sem estoque
+                                </span>
+                              ) : (
+                                <span
+                                  className="rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-white shadow-lg"
+                                  style={{
+                                    backgroundColor: product.promotionalPrice
+                                      ? store.accentColor
+                                      : "rgba(15,23,42,0.68)",
+                                  }}
+                                >
+                                  {product.promotionalPrice ? `-${discountPercentage}%` : "Ver"}
+                                </span>
+                              )}
                             </div>
                           </div>
                         ) : null}
@@ -1299,7 +1316,11 @@ export function StorefrontClient({
                             <span className="rounded-full bg-slate-950/70 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-white backdrop-blur sm:text-[11px] sm:tracking-[0.18em]">
                               {product.categoryName}
                             </span>
-                            {product.promotionalPrice ? (
+                            {!productHasStock ? (
+                              <span className="rounded-full bg-slate-900/80 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-white shadow-lg sm:text-[11px]">
+                                Sem estoque
+                              </span>
+                            ) : product.promotionalPrice ? (
                               <span
                                 className="rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-white shadow-lg sm:text-[11px] sm:tracking-[0.18em]"
                                 style={{ backgroundColor: store.accentColor }}

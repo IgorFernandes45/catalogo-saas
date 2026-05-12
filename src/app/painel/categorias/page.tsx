@@ -4,6 +4,7 @@ import {
 } from "@/app/painel/actions";
 import { CategoryAdminForm } from "@/components/shared/category-admin-form";
 import { CategoryManagementCard } from "@/components/shared/category-management-card";
+import { CategoryReorderList } from "@/components/shared/category-reorder-list";
 import { requireStoreUser } from "@/lib/auth";
 import { parseCategoryVariantGroupsJson, serializeCategoryVariantGroupsDefinition } from "@/lib/category-variant-groups";
 import { prisma } from "@/lib/prisma";
@@ -33,6 +34,15 @@ export default async function CategoriesPage() {
         <h2 className="mt-2 text-2xl font-semibold text-slate-950">
           Categorias ja cadastradas
         </h2>
+        {categories.length > 1 ? (
+          <CategoryReorderList
+            initialCategories={categories.map((c) => ({
+              id: c.id,
+              name: c.name,
+              sortOrder: c.sortOrder,
+            }))}
+          />
+        ) : null}
         <div className="mt-6 grid gap-4">
           {categories.map((category) => (
             <CategoryManagementCard

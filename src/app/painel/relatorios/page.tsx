@@ -1,7 +1,9 @@
 import Link from "next/link";
 
 import { EmptyStateCard } from "@/components/shared/empty-state-card";
+import { ExportCsvButton } from "@/components/shared/export-csv-button";
 import { ReportFiltersForm } from "@/components/shared/report-filters-form";
+import { SalesBarChart } from "@/components/shared/sales-bar-chart";
 import { StatCard } from "@/components/shared/stat-card";
 import { requireSalesEnabledStoreUser } from "@/lib/auth";
 import {
@@ -113,7 +115,18 @@ export default async function SalesReportsPage({
           selectedProduct={selectedProduct}
         />
 
-        <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <div className="mt-6 flex justify-end">
+          <ExportCsvButton
+            filename={`relatorio-vendas-${report.filters.dateFrom ?? "tudo"}.csv`}
+            rows={report.topProducts.map((p) => ({
+              Produto: p.productName,
+              Quantidade: p.quantity,
+              Receita: formatCurrency(p.revenue),
+              Lucro: formatCurrency(p.profit),
+            }))}
+          />
+        </div>
+        <div className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <StatCard label="Faturamento" value={formatCurrency(report.totalRevenue)} />
           <StatCard label="Lucro bruto" value={formatCurrency(report.totalProfit)} />
           <StatCard label="Custo vendido" value={formatCurrency(report.totalCost)} />
@@ -170,6 +183,9 @@ export default async function SalesReportsPage({
           <h2 className="mt-2 text-2xl font-semibold text-slate-950">
             Dias com faturamento
           </h2>
+          {report.salesByDay.length ? (
+            <SalesBarChart data={report.salesByDay} />
+          ) : null}
           <div className="mt-6 grid gap-3">
             {report.salesByDay.length ? (
               report.salesByDay.map((day) => (
