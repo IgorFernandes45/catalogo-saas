@@ -123,6 +123,7 @@ export function ProductAdminForm({
     initialValues?.variantsDefinition ? "variants" : "simple",
   );
   const [formResetKey, setFormResetKey] = useState(0);
+  const [productName, setProductName] = useState(initialValues?.name || "");
   const [price, setPrice] = useState(initialValues?.price || "");
   const [promotionalPrice, setPromotionalPrice] = useState(
     initialValues?.promotionalPrice || "",
@@ -133,6 +134,7 @@ export function ProductAdminForm({
   const [attributeValues, setAttributeValues] = useState<Record<string, string>>(
     initialValues?.productAttributes || {},
   );
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const isEditing = Boolean(initialValues);
 
   const profilePreset = useMemo(
@@ -159,7 +161,38 @@ export function ProductAdminForm({
     ),
   });
 
+  function validateCurrentStep(): Record<string, string> {
+    const errors: Record<string, string> = {};
+
+    if (currentStep === 0 && !isAddingExistingVariation) {
+      if (!productName.trim()) {
+        errors.name = "Informe o nome do produto.";
+      } else if (productName.trim().length < 2) {
+        errors.name = "O nome precisa ter pelo menos 2 caracteres.";
+      }
+    }
+
+    if (currentStep === 1 && !isVariantProduct) {
+      const parsed = parseCurrency(price);
+      if (!price.trim()) {
+        errors.price = "Informe o preco do produto.";
+      } else if (isNaN(parsed) || parsed <= 0) {
+        errors.price = "Preco invalido. Use o formato 59,90.";
+      }
+    }
+
+    return errors;
+  }
+
   function goToStep(index: number) {
+    if (index > currentStep) {
+      const errors = validateCurrentStep();
+      if (Object.keys(errors).length > 0) {
+        setFieldErrors(errors);
+        return;
+      }
+    }
+    setFieldErrors({});
     setCurrentStep(Math.max(0, Math.min(steps.length - 1, index)));
   }
 
@@ -196,6 +229,7 @@ export function ProductAdminForm({
           if (result.status === "success") {
             if (!isEditing) {
               form.reset();
+              setProductName("");
               setCategoryId(categories[0]?.id ?? "");
               setProductMode("simple");
               setRegistrationMode("new");
@@ -206,6 +240,7 @@ export function ProductAdminForm({
               setPromotionalPrice("");
               setCostPrice("");
               setBarcode("");
+              setFieldErrors({});
               setCurrentStep(0);
               setFormResetKey((current) => current + 1);
             }
@@ -395,12 +430,22 @@ export function ProductAdminForm({
             <label className="grid gap-2 text-sm font-medium text-slate-700">
               Nome do produto
               <input
-                required={!isAddingExistingVariation}
                 name="name"
-                defaultValue={initialValues?.name || ""}
-                className="min-w-0 rounded-2xl border border-slate-200 px-4 py-3"
+                value={productName}
+                onChange={(event) => {
+                  setProductName(event.target.value);
+                  if (fieldErrors.name) {
+                    setFieldErrors((current) => ({ ...current, name: "" }));
+                  }
+                }}
+                className={`min-w-0 rounded-2xl border px-4 py-3 ${
+                  fieldErrors.name ? "border-red-400 bg-red-50" : "border-slate-200"
+                }`}
                 placeholder="Ex.: Tenis Nike Air"
               />
+              {fieldErrors.name ? (
+                <span className="text-xs text-red-600">{fieldErrors.name}</span>
+              ) : null}
             </label>
 
             <label className="grid gap-2 text-sm font-medium text-slate-700">
@@ -511,13 +556,22 @@ export function ProductAdminForm({
             <label className="grid gap-2 text-sm font-medium text-slate-700">
               Preco normal
               <input
-                required={!isVariantProduct}
                 name="price"
                 value={price}
-                onChange={(event) => setPrice(event.target.value)}
+                onChange={(event) => {
+                  setPrice(event.target.value);
+                  if (fieldErrors.price) {
+                    setFieldErrors((current) => ({ ...current, price: "" }));
+                  }
+                }}
                 placeholder="59,90"
-                className="min-w-0 rounded-2xl border border-slate-200 px-4 py-3"
+                className={`min-w-0 rounded-2xl border px-4 py-3 ${
+                  fieldErrors.price ? "border-red-400 bg-red-50" : "border-slate-200"
+                }`}
               />
+              {fieldErrors.price ? (
+                <span className="text-xs text-red-600">{fieldErrors.price}</span>
+              ) : null}
             </label>
             <label className="grid gap-2 text-sm font-medium text-slate-700">
               Preco promocional

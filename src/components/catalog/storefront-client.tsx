@@ -607,7 +607,11 @@ export function StorefrontClient({
 
       window.localStorage.removeItem(cartKey);
       setCart([]);
-      window.location.assign(data.whatsappLink);
+      sessionStorage.setItem(
+        `pedido-confirmado:${store.slug}`,
+        JSON.stringify({ whatsappLink: data.whatsappLink, storeName: store.name }),
+      );
+      window.location.assign(`/loja/${store.slug}/pedido-confirmado`);
     } catch {
       setError("Nao foi possivel enviar o pedido agora. Tente novamente.");
     } finally {
