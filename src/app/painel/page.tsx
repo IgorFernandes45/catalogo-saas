@@ -51,11 +51,13 @@ export default async function StoreDashboardPage() {
                     { href: "/painel/relatorios/estoque", label: "Abrir relatorio de estoque" },
                   ]
                 : []),
-              { href: `/loja/${user.store?.slug}`, label: "Abrir catalogo publico da loja" },
+              { href: `/loja/${user.store?.slug}`, label: "Abrir catálogo público da loja", target: "_blank" },
             ].map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
+                target={"target" in item ? item.target : undefined}
+                rel={"target" in item ? "noopener noreferrer" : undefined}
                 className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700 transition hover:border-orange-300 hover:text-orange-600"
               >
                 {item.label}

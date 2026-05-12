@@ -9,9 +9,9 @@ const nav = [
   { href: "/painel/estoque", label: "Estoque" },
   { href: "/painel/clientes", label: "Clientes" },
   { href: "/painel/pedidos", label: "Pedidos" },
-  { href: "/painel/vendas", label: "Historico" },
-  { href: "/painel/relatorios", label: "Vendas" },
-  { href: "/painel/relatorios/estoque", label: "Mov. estoque" },
+  { href: "/painel/vendas", label: "Histórico" },
+  { href: "/painel/relatorios", label: "Relatórios" },
+  { href: "/painel/relatorios/estoque", label: "Mov. Estoque" },
 ];
 
 export default async function StoreLayout({

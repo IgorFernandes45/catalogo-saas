@@ -293,8 +293,7 @@ export function StorefrontClient({
   const [isProductSheetDragging, setIsProductSheetDragging] = useState(false);
   const productSheetStartYRef = useRef<number | null>(null);
   const productSheetScrollRef = useRef<HTMLDivElement | null>(null);
-  const salesEnabled = true;
-
+  const salesEnabled = store.accessMode !== "CATALOG_ONLY";
   const cartKey = buildCartKey(store.slug);
   const [cart, setCart] = useState<CartItem[]>([]);
   const handleCatalogFiltersChange = useCallback(

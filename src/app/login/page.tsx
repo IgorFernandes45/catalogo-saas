@@ -1,6 +1,6 @@
-import { ArrowRight, ShieldCheck, Store } from "lucide-react";
+import { ShieldCheck, Store } from "lucide-react";
 
-import { loginAction } from "@/app/login/actions";
+import { LoginForm } from "@/app/login/login-form";
 
 export default async function LoginPage({
   searchParams,
@@ -57,43 +57,7 @@ export default async function LoginPage({
             </p>
           </div>
 
-          {params.error ? (
-            <div className="mt-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-              {params.error}
-            </div>
-          ) : null}
-
-          <form action={loginAction} className="mt-8 grid gap-5">
-            <label className="grid gap-2 text-sm font-medium text-slate-700">
-              E-mail
-              <input
-                required
-                type="email"
-                name="email"
-                autoComplete="email"
-                className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-950"
-                placeholder="voce@empresa.com"
-              />
-            </label>
-            <label className="grid gap-2 text-sm font-medium text-slate-700">
-              Senha
-              <input
-                required
-                type="password"
-                name="password"
-                autoComplete="current-password"
-                className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-950"
-                placeholder="Sua senha"
-              />
-            </label>
-            <button
-              type="submit"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
-            >
-              Continuar
-              <ArrowRight className="size-4" />
-            </button>
-          </form>
+          <LoginForm error={params.error} />
         </section>
       </div>
     </main>
