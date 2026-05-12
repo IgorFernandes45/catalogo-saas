@@ -336,7 +336,7 @@ export function StoreProfileForm({ store }: StoreProfileFormProps) {
           <select
             name="themeMode"
             defaultValue={store.themeMode}
-            className="rounded-2xl border border-slate-200 px-4 py-3"
+            className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900"
           >
             <option value="light">Claro</option>
             <option value="dark">Escuro</option>

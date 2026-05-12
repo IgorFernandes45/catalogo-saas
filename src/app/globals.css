@@ -6,6 +6,7 @@
   --muted: #475569;
   --card: #ffffff;
   --ring: #f97316;
+  color-scheme: light;
 }
 
 @theme inline {

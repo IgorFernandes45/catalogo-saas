@@ -49,7 +49,7 @@ export function ChangePasswordForm() {
             name="currentPassword"
             required
             autoComplete="current-password"
-            className="rounded-2xl border border-slate-200 px-4 py-3"
+            className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900"
             placeholder="••••••••"
           />
         </label>
@@ -61,7 +61,7 @@ export function ChangePasswordForm() {
             required
             minLength={6}
             autoComplete="new-password"
-            className="rounded-2xl border border-slate-200 px-4 py-3"
+            className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900"
             placeholder="••••••••"
           />
         </label>
@@ -72,7 +72,7 @@ export function ChangePasswordForm() {
             name="confirmPassword"
             required
             autoComplete="new-password"
-            className="rounded-2xl border border-slate-200 px-4 py-3"
+            className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900"
             placeholder="••••••••"
           />
         </label>
