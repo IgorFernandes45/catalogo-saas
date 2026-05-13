@@ -106,6 +106,8 @@ model Store {
   auditLogs      AuditLog[]
   stockMovements StockMovement[]
   productImportSessions ProductImportSession[]
+  agentConfig    AgentConfig?
+  agentConversations AgentConversation[]
 }
 
 model Category {
@@ -378,4 +380,44 @@ model StockMovement {
   @@index([productId, createdAt])
   @@index([productVariantId, createdAt])
   @@index([orderId])
+}
+
+model AgentConfig {
+  id                  String   @id @default(cuid())
+  storeId             String   @unique
+  isEnabled           Boolean  @default(false)
+  agentName           String   @default("Assistente")
+  greetingMessage     String?
+  evolutionUrl        String?
+  evolutionApiKey     String?
+  evolutionInstance   String?
+  phoneNumber         String?
+  connectionStatus    String   @default("disconnected")
+  deliveryFee         String?
+  deliveryFeeNote     String?
+  deliveryTime        String?
+  deliveryArea        String?
+  acceptedPaymentsJson String?
+  openingHours        String?
+  customInstructions  String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  store               Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  @@index([storeId])
+}
+
+model AgentConversation {
+  id              String   @id @default(cuid())
+  storeId         String
+  customerPhone   String
+  customerName    String?
+  messagesJson    String   @default("[]")
+  lastMessageAt   DateTime @default(now())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  store           Store    @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  @@unique([storeId, customerPhone])
+  @@index([storeId, lastMessageAt])
 }
