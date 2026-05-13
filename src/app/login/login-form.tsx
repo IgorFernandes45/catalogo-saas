@@ -41,7 +41,7 @@ export function LoginForm({ error }: { error?: string }) {
             name="email"
             autoComplete="email"
             className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-950"
-            placeholder="voce@empresa.com"
+            placeholder="voce@exemplo.com.br"
           />
         </label>
         <label className="grid gap-2 text-sm font-medium text-slate-700">

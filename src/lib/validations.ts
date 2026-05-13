@@ -11,30 +11,30 @@ const catalogImageUrl = (message: string) =>
     .optional()
     .refine(
       (value) => isCatalogImageUrlAllowed(value),
-      "Use uma imagem enviada pelo sistema/Cloudinary. URLs externas nao permitidas podem quebrar o catalogo.",
+      "Use uma imagem enviada pelo sistema/Cloudinary. URLs externas não permitidas podem quebrar o catálogo.",
     );
 
 export const loginSchema = z.object({
-  email: z.email("Informe um e-mail valido."),
+  email: z.email("Informe um e-mail válido."),
   password: z.string().min(6, "A senha precisa ter pelo menos 6 caracteres."),
 });
 
 export const storeSchema = z.object({
-  name: z.string().min(2, "Nome da loja obrigatorio."),
+  name: z.string().min(2, "Nome da loja obrigatório."),
   slug: z
     .string()
-    .min(2, "Slug obrigatorio.")
-    .regex(/^[a-z0-9-]+$/, "Use apenas letras minusculas, numeros e hifen."),
+    .min(2, "Slug obrigatório.")
+    .regex(/^[a-z0-9-]+$/, "Use apenas letras minúsculas, números e hífen."),
   description: z.string().optional(),
-  logoUrl: catalogImageUrl("Logo invalida."),
-  bannerUrl: catalogImageUrl("Banner invalido."),
-  whatsappNumber: z.string().min(10, "WhatsApp obrigatorio."),
-  email: z.email("E-mail invalido.").or(z.literal("")).optional(),
+  logoUrl: catalogImageUrl("Logo inválida."),
+  bannerUrl: catalogImageUrl("Banner inválido."),
+  whatsappNumber: z.string().min(10, "WhatsApp obrigatório."),
+  email: z.email("E-mail inválido.").or(z.literal("")).optional(),
   phone: z.string().optional(),
   address: z.string().optional(),
-  primaryColor: z.string().regex(hexColor, "Cor principal invalida."),
-  secondaryColor: z.string().regex(hexColor, "Cor secundaria invalida."),
-  accentColor: z.string().regex(hexColor, "Cor de destaque invalida."),
+  primaryColor: z.string().regex(hexColor, "Cor principal inválida."),
+  secondaryColor: z.string().regex(hexColor, "Cor secundária inválida."),
+  accentColor: z.string().regex(hexColor, "Cor de destaque inválida."),
   themeMode: z.enum(["light", "dark"]).default("light"),
   accessMode: z.enum(["FULL", "CATALOG_ONLY"]).optional(),
   catalogUsesImages: z.boolean().default(true),
@@ -46,25 +46,25 @@ export const storeSchema = z.object({
 });
 
 export const categoryAttributeSchema = z.object({
-  name: z.string().min(2, "Nome do atributo obrigatorio."),
+  name: z.string().min(2, "Nome do atributo obrigatório."),
   fieldType: z.enum(["TEXT", "NUMBER", "SELECT", "MULTISELECT"]),
   isRequired: z.boolean().default(false),
   options: z.array(z.string()).default([]),
 });
 
 export const categoryVariantGroupSchema = z.object({
-  name: z.string().min(1, "Informe o nome do grupo de variacao."),
+  name: z.string().min(1, "Informe o nome do grupo de variação."),
   options: z.array(z.string().min(1)).default([]),
 });
 
 export const categorySchema = z.object({
-  name: z.string().min(2, "Nome da categoria obrigatorio."),
+  name: z.string().min(2, "Nome da categoria obrigatório."),
   slug: z
     .string()
-    .min(2, "Slug obrigatorio.")
-    .regex(/^[a-z0-9-]+$/, "Slug invalido."),
+    .min(2, "Slug obrigatório.")
+    .regex(/^[a-z0-9-]+$/, "Slug inválido."),
   description: z.string().optional(),
-  imageUrl: catalogImageUrl("Imagem invalida."),
+  imageUrl: catalogImageUrl("Imagem inválida."),
   sortOrder: z.number().int().min(0).default(0),
   isActive: z.boolean().default(true),
   useStock: z.boolean().default(false),
@@ -83,10 +83,10 @@ export const productCustomValueSchema = z.object({
 });
 
 export const productVariantSchema = z.object({
-  label: z.string().min(1, "Informe um rotulo para a variacao."),
+  label: z.string().min(1, "Informe um rótulo para a variação."),
   sku: z.string().optional(),
   barcode: z.string().optional(),
-  imageUrl: catalogImageUrl("Imagem da variacao invalida."),
+  imageUrl: catalogImageUrl("Imagem da variação inválida."),
   priceOverride: z.number().positive().optional(),
   promotionalPriceOverride: z.number().nonnegative().optional(),
   discountPercent: z.number().min(0).max(100).optional(),
@@ -95,34 +95,34 @@ export const productVariantSchema = z.object({
   isActive: z.boolean().default(true),
   attributes: z.record(z.string(), z.string().min(1)).refine(
     (attributes) => Object.keys(attributes).length > 0,
-    "Informe pelo menos um atributo na variacao.",
+    "Informe pelo menos um atributo na variação.",
   ),
 });
 
 export const productSchema = z.object({
   parentProductId: z.string().optional(),
-  categoryId: z.string().min(1, "Categoria obrigatoria."),
-  name: z.string().min(2, "Nome do produto obrigatorio."),
+  categoryId: z.string().min(1, "Categoria obrigatória."),
+  name: z.string().min(2, "Nome do produto obrigatório."),
   slug: z
     .string()
-    .min(2, "Slug obrigatorio.")
-    .regex(/^[a-z0-9-]+$/, "Slug invalido."),
+    .min(2, "Slug obrigatório.")
+    .regex(/^[a-z0-9-]+$/, "Slug inválido."),
   shortDescription: z.string().optional(),
   fullDescription: z.string().optional(),
   brandSupplier: z.string().optional(),
   attributesJson: z.string().optional(),
   sku: z.string().optional(),
   barcode: z.string().optional(),
-    price: z.number().nonnegative("Preco deve ser zero ou maior."),
+    price: z.number().nonnegative("Preço deve ser zero ou maior."),
   promotionalPrice: z.number().nonnegative().optional(),
   costPrice: z.number().nonnegative().optional(),
   profitMarginPercent: z.number().nonnegative().optional(),
-  imageUrl: catalogImageUrl("Imagem invalida."),
+  imageUrl: catalogImageUrl("Imagem inválida."),
   gallery: z
     .array(
       z
         .string()
-        .url("URL de galeria invalida.")
+        .url("URL de galeria inválida.")
         .refine(
           (value) => isCatalogImageUrlAllowed(value),
           "Use imagens enviadas pelo sistema/Cloudinary na galeria.",
@@ -145,7 +145,7 @@ export const productSchema = z.object({
     context.addIssue({
       code: "custom",
       path: ["price"],
-      message: "Preco deve ser maior que zero.",
+      message: "Preço deve ser maior que zero.",
   });
   }
 
@@ -154,7 +154,7 @@ export const productSchema = z.object({
       context.addIssue({
         code: "custom",
         path: ["variants", index, "priceOverride"],
-        message: "Informe o preco de venda da variacao.",
+        message: "Informe o preço de venda da variação.",
       });
     }
   }
@@ -171,8 +171,8 @@ export const orderItemSchema = z.object({
 });
 
 export const orderSchema = z.object({
-  customerName: z.string().min(2, "Nome obrigatorio."),
-  customerPhone: z.string().min(10, "Telefone obrigatorio."),
+  customerName: z.string().min(2, "Nome obrigatório."),
+  customerPhone: z.string().min(10, "Telefone obrigatório."),
   deliveryAddress: z.string().optional().default(""),
   deliveryNumber: z.string().optional(),
   deliveryDistrict: z.string().optional().default(""),
@@ -186,16 +186,17 @@ export const orderSchema = z.object({
 export const manualSaleSchema = z.object({
   productId: z.string().min(1, "Selecione um produto."),
   productVariantId: z.string().optional(),
-  quantity: z.number().int().positive("Informe uma quantidade valida."),
+  quantity: z.number().int().positive("Informe uma quantidade válida."),
   paymentMethod: z.enum(["CASH", "PIX", "DEBIT_CARD", "CREDIT_CARD", "BANK_TRANSFER", "OTHER"]).optional(),
+  customerId: z.string().optional(),
   customerName: z.string().optional(),
   notes: z.string().optional(),
 });
 
 export const customerSchema = z.object({
-  name: z.string().min(2, "Nome do cliente obrigatorio."),
+  name: z.string().min(2, "Nome do cliente obrigatório."),
   phone: z.string().optional(),
-  email: z.email("E-mail invalido.").or(z.literal("")).optional(),
+  email: z.email("E-mail inválido.").or(z.literal("")).optional(),
   document: z.string().optional(),
   address: z.string().optional(),
   number: z.string().optional(),

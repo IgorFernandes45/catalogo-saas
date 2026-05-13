@@ -23,11 +23,11 @@ export async function GET(request: Request) {
   const user = await getCurrentUserBasic();
 
   if (!user || !user.isActive) {
-    return NextResponse.json({ error: "Nao autenticado." }, { status: 401 });
+    return NextResponse.json({ error: "Não autenticado." }, { status: 401 });
   }
 
   if (user.role === "SUPER_ADMIN" || !user.storeId) {
-    return NextResponse.json({ error: "Sem permissao para esta rota." }, { status: 403 });
+    return NextResponse.json({ error: "Sem permissão para esta rota." }, { status: 403 });
   }
 
   const { searchParams } = new URL(request.url);

@@ -25,7 +25,7 @@ export async function POST(request: Request) {
   const user = await getCurrentUser();
 
   if (!user || !user.isActive || !user.storeId || user.role === "SUPER_ADMIN") {
-    return NextResponse.json({ error: "Nao autorizado." }, { status: 401 });
+    return NextResponse.json({ error: "Não autorizado." }, { status: 401 });
   }
 
   if (!isCloudinaryConfigured()) {
@@ -50,7 +50,7 @@ export async function POST(request: Request) {
 
   if (!allowedPurposes.has(purpose as UploadPurpose)) {
     return NextResponse.json(
-      { error: "Tipo de upload invalido." },
+      { error: "Tipo de upload inválido." },
       { status: 400 },
     );
   }
@@ -58,7 +58,7 @@ export async function POST(request: Request) {
   if (!isAllowedImageFile(fileEntry)) {
     return NextResponse.json(
       {
-        error: `Formato nao suportado. Use ${getAllowedImageMimeTypes()
+        error: `Formato não suportado. Use ${getAllowedImageMimeTypes()
           .map((type) => type.replace("image/", "").toUpperCase())
           .join(", ")}.`,
       },
@@ -89,7 +89,7 @@ export async function POST(request: Request) {
         error:
           error instanceof Error
             ? error.message
-            : "Nao foi possivel enviar a imagem agora.",
+            : "Não foi possível enviar a imagem agora.",
       },
       { status: 500 },
     );

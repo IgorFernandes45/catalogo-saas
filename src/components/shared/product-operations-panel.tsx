@@ -64,7 +64,7 @@ export function ProductOperationsPanel({
 
         {activePanel === "overview" ? (
           <div className="rounded-[24px] border border-dashed border-slate-300 bg-white px-5 py-6 text-sm leading-7 text-slate-600">
-            Abra apenas a acao que voce quer usar agora. Assim a tela de produtos fica mais leve
+            Abra apenas a ação que você quer usar agora. Assim a tela de produtos fica mais leve
             mesmo quando a loja tiver muitos itens cadastrados.
           </div>
         ) : null}

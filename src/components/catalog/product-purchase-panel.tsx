@@ -116,7 +116,7 @@ export function ProductPurchasePanel({
               />
               <div className="min-w-0">
                 <p className="text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
-                  Foto e preco da selecao
+                  Foto e preço da seleção
                 </p>
                 <p className="mt-1 truncate text-sm font-semibold text-slate-950">
                   {matchingVariant?.label || previewVariant?.label || product.name}
@@ -189,7 +189,7 @@ export function ProductPurchasePanel({
 
           {!selectionsComplete ? (
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-orange-600">
-              Escolha as opcoes para liberar a compra
+              Escolha as opções para liberar a compra
             </p>
           ) : null}
 

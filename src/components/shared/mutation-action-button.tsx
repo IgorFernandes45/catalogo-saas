@@ -22,8 +22,8 @@ export function MutationActionButton({
   confirmMessage,
   idleLabel,
   pendingLabel,
-  successTitle = "Acao concluida",
-  errorTitle = "Nao foi possivel concluir",
+  successTitle = "Ação concluída",
+  errorTitle = "Não foi possível concluir",
   tone = "danger",
 }: MutationActionButtonProps) {
   const router = useRouter();

@@ -66,7 +66,7 @@ export async function POST(
   });
 
   if (!store) {
-    return NextResponse.json({ error: "Loja nao encontrada." }, { status: 404 });
+    return NextResponse.json({ error: "Loja não encontrada." }, { status: 404 });
   }
 
   const storeProducts = await prisma.product.findMany({
@@ -101,7 +101,7 @@ export async function POST(
 
   if (storeProducts.length !== parsed.data.items.length) {
     return NextResponse.json(
-      { error: "Um ou mais produtos nao estao disponiveis." },
+      { error: "Um ou mais produtos não estão disponíveis." },
       { status: 400 },
     );
   }
@@ -129,11 +129,11 @@ export async function POST(
         : null;
 
       if (item.productVariantId && !variant) {
-        throw new Error("Uma variacao selecionada nao esta mais disponivel.");
+        throw new Error("Uma variação selecionada não está mais disponível.");
       }
 
       if (product?.variants.length && !item.productVariantId) {
-        throw new Error("Selecione a variacao do produto antes de enviar o pedido.");
+        throw new Error("Selecione a variação do produto antes de enviar o pedido.");
       }
 
       return {
@@ -159,9 +159,9 @@ export async function POST(
     (total, item) => total + item.quantity * item.unitPrice,
     0,
   );
-  const deliveryAddress = parsed.data.deliveryAddress?.trim() || "Nao informado";
-  const deliveryDistrict = parsed.data.deliveryDistrict?.trim() || "Nao informado";
-  const deliveryCity = parsed.data.deliveryCity?.trim() || "Nao informado";
+  const deliveryAddress = parsed.data.deliveryAddress?.trim() || "Não informado";
+  const deliveryDistrict = parsed.data.deliveryDistrict?.trim() || "Não informado";
+  const deliveryCity = parsed.data.deliveryCity?.trim() || "Não informado";
 
   const message = buildWhatsAppMessage({
     storeName: store.name,

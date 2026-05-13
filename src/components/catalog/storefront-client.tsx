@@ -607,7 +607,7 @@ export function StorefrontClient({
       };
 
       if (!response.ok || !data.whatsappLink) {
-        setError(data.error || "Nao foi possivel enviar o pedido.");
+        setError(data.error || "Não foi possível enviar o pedido.");
         return;
       }
 
@@ -619,7 +619,7 @@ export function StorefrontClient({
       );
       window.location.assign(`/loja/${store.slug}/pedido-confirmado`);
     } catch {
-      setError("Nao foi possivel enviar o pedido agora. Tente novamente.");
+      setError("Não foi possível enviar o pedido agora. Tente novamente.");
     } finally {
       setSubmitting(false);
     }
@@ -637,7 +637,7 @@ export function StorefrontClient({
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 rounded-full bg-orange-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-orange-700">
               <ShoppingCart className="size-3.5" />
-              Pedido rapido
+              Pedido rápido
             </div>
             <div>
               <h2 className="text-2xl font-semibold text-slate-950">Seu carrinho</h2>
@@ -675,7 +675,7 @@ export function StorefrontClient({
             <p className="text-[11px] uppercase tracking-[0.18em] text-orange-600">
               Entrega
             </p>
-            <p className="mt-1 text-lg font-semibold">Rapida</p>
+            <p className="mt-1 text-lg font-semibold">Rápida</p>
           </div>
         </div>
       </div>
@@ -793,9 +793,9 @@ export function StorefrontClient({
               <Truck className="size-5" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-slate-950">Entrega mais rapida</p>
+              <p className="text-sm font-semibold text-slate-950">Entrega mais rápida</p>
               <p className="text-sm text-slate-500">
-                Nome e telefone sao obrigatorios. Endereco e opcional.
+                Nome e telefone são obrigatórios. Endereço é opcional.
               </p>
             </div>
           </div>
@@ -840,7 +840,7 @@ export function StorefrontClient({
             </label>
             <div className="grid gap-4 sm:grid-cols-[1fr_120px]">
               <label className="grid gap-2 text-sm font-medium text-slate-700">
-                Endereco
+                Endereço
                 <input
                   name="deliveryAddress"
                   autoComplete="street-address"
@@ -856,7 +856,7 @@ export function StorefrontClient({
                 />
               </label>
               <label className="grid gap-2 text-sm font-medium text-slate-700">
-                Numero
+                Número
                 <input
                   name="deliveryNumber"
                   inputMode="numeric"
@@ -922,7 +922,7 @@ export function StorefrontClient({
               />
             </label>
             <label className="grid gap-2 text-sm font-medium text-slate-700">
-              Referencia
+              Referência
               <input
                 name="deliveryReference"
                 value={customerDraft.deliveryReference}
@@ -1140,7 +1140,7 @@ export function StorefrontClient({
                 <div className="flex items-center justify-between gap-3">
                   <div>
                     <p className="text-xs uppercase tracking-[0.22em] text-orange-200">
-                      {salesEnabled ? "Fluxo rapido" : "Modo catalogo"}
+                      {salesEnabled ? "Fluxo rápido" : "Modo catálogo"}
                     </p>
                     <h2 className="mt-2 text-2xl font-semibold text-white">
                       {salesEnabled ? "Comprar em poucos toques" : "Vitrine para apresentacao"}
@@ -1173,7 +1173,7 @@ export function StorefrontClient({
                       <div className="rounded-[24px] bg-white/10 p-4">
                         <p className="text-sm font-semibold text-white">3. Enviar pedido</p>
                         <p className="mt-1 text-sm leading-6 text-slate-200">
-                          Informe o endereco e finalize tudo no WhatsApp da loja.
+                          Informe o endereço e finalize tudo no WhatsApp da loja.
                         </p>
                       </div>
                     </>
@@ -1404,7 +1404,7 @@ export function StorefrontClient({
                                 className="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
                               >
                                 <ShoppingCart className="size-4" />
-                                Ver opcoes
+                                Ver opções
                               </Link>
                             </>
                           ) : (
@@ -1443,7 +1443,7 @@ export function StorefrontClient({
                 Nenhum produto encontrado
               </h2>
               <p className="mx-auto mt-2 max-w-lg text-sm leading-7 text-slate-500">
-                Ajuste a busca ou toque em Limpar para voltar para o catalogo completo da loja.
+                Ajuste a busca ou toque em Limpar para voltar para o catálogo completo da loja.
               </p>
             </section>
           )}
@@ -1451,7 +1451,7 @@ export function StorefrontClient({
           {pagination && pagination.totalPages > 1 && !catalogSupportsInstantFilters ? (
             <section className="flex flex-wrap items-center justify-between gap-3 rounded-[28px] border border-white/70 bg-white/92 px-4 py-4 shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
               <p className="text-sm text-slate-500">
-                Pagina {pagination.currentPage} de {pagination.totalPages}
+                Página {pagination.currentPage} de {pagination.totalPages}
               </p>
               <div className="flex gap-3">
                 <Link
@@ -1474,7 +1474,7 @@ export function StorefrontClient({
                       : "border border-slate-200 bg-white text-slate-700 hover:border-slate-300"
                   }`}
                 >
-                  Proxima
+                  Próxima
                 </Link>
               </div>
             </section>
@@ -1666,7 +1666,7 @@ export function StorefrontClient({
                         ) : null}
                         {!selectedSelectionsComplete ? (
                           <p className="mt-4 text-xs font-semibold uppercase tracking-[0.14em] text-orange-600">
-                            Escolha as opcoes para continuar
+                            Escolha as opções para continuar
                           </p>
                         ) : null}
                         {selectedStockLabel && (selectedSelectionsComplete || !selectedOptionGroups.length) ? (

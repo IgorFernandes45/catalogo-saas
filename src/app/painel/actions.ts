@@ -321,7 +321,7 @@ export async function updateCategoryAction(
       message:
         error instanceof Error
           ? error.message
-          : "Nao foi possivel atualizar a categoria.",
+          : "Não foi possível atualizar a categoria.",
       resetToken: Date.now(),
     };
   }
@@ -395,7 +395,7 @@ export async function deleteCategoryAction(
       message:
         error instanceof Error
           ? error.message
-          : "Nao foi possivel excluir a categoria.",
+          : "Não foi possível excluir a categoria.",
       resetToken: Date.now(),
     };
   }
@@ -485,7 +485,7 @@ export async function createProductAction(
       message:
         error instanceof Error
           ? error.message
-          : "Nao foi possivel criar o produto.",
+          : "Não foi possível criar o produto.",
       resetToken: Date.now(),
     };
   }
@@ -569,7 +569,7 @@ export async function updateProductAction(
       message:
         error instanceof Error
           ? error.message
-          : "Nao foi possivel atualizar o produto.",
+          : "Não foi possível atualizar o produto.",
       resetToken: Date.now(),
     };
   }
@@ -632,7 +632,7 @@ export async function deleteProductAction(
       message:
         error instanceof Error
           ? error.message
-          : "Nao foi possivel excluir o produto.",
+          : "Não foi possível excluir o produto.",
       resetToken: Date.now(),
     };
   }
@@ -767,7 +767,7 @@ export async function adjustProductStockAction(
     return {
       status: "error",
       message:
-        error instanceof Error ? error.message : "Nao foi possivel mover o estoque.",
+        error instanceof Error ? error.message : "Não foi possível mover o estoque.",
       resetToken: Date.now(),
     };
   }
@@ -785,7 +785,7 @@ export async function updateOrderStatusAction(
   if (user.store?.accessMode === "CATALOG_ONLY") {
     return {
       status: "error",
-      message: "Esta loja esta em modo somente catalogo.",
+      message: "Esta loja está em modo somente catálogo.",
       resetToken: Date.now(),
     };
   }
@@ -815,7 +815,7 @@ export async function updateOrderStatusAction(
         });
 
         if (!order) {
-          throw new Error("Pedido nao encontrado para esta loja.");
+          throw new Error("Pedido não encontrado para esta loja.");
         }
 
         if (order.status !== "PENDING") {
@@ -864,7 +864,7 @@ export async function updateOrderStatusAction(
     return {
       status: "error",
       message:
-        error instanceof Error ? error.message : "Nao foi possivel atualizar o pedido.",
+        error instanceof Error ? error.message : "Não foi possível atualizar o pedido.",
       resetToken: Date.now(),
     };
   }
@@ -894,7 +894,7 @@ export async function createManualSaleAction(
   if (user.store?.accessMode === "CATALOG_ONLY") {
     return {
       status: "error",
-      message: "Esta loja esta em modo somente catalogo.",
+      message: "Esta loja está em modo somente catálogo.",
       resetToken: Date.now(),
     };
   }
@@ -902,7 +902,7 @@ export async function createManualSaleAction(
   if (!user.storeId) {
     return {
       status: "error",
-      message: "Loja nao encontrada para este usuario.",
+      message: "Loja não encontrada para este usuário.",
       resetToken: Date.now(),
     };
   }
@@ -912,6 +912,7 @@ export async function createManualSaleAction(
     productVariantId: String(formData.get("productVariantId") ?? "").trim() || undefined,
     quantity: Number(formData.get("quantity") ?? 0),
     paymentMethod: String(formData.get("paymentMethod") ?? "OTHER") || "OTHER",
+    customerId: String(formData.get("customerId") ?? "").trim() || undefined,
     customerName: String(formData.get("customerName") ?? "").trim(),
     notes: String(formData.get("notes") ?? "").trim(),
   });
@@ -960,11 +961,21 @@ export async function createManualSaleAction(
           : null;
 
         if (!product) {
-          throw new Error("Produto nao encontrado para esta loja.");
+          throw new Error("Produto não encontrado para esta loja.");
         }
 
         if (parsed.data.productVariantId && !variant) {
-          throw new Error("Variacao nao encontrada para este produto.");
+          throw new Error("Variação não encontrada para este produto.");
+        }
+
+        if (parsed.data.customerId) {
+          const customerExists = await tx.customer.findFirst({
+            where: { id: parsed.data.customerId, storeId: user.storeId! },
+            select: { id: true },
+          });
+          if (!customerExists) {
+            throw new Error("Cliente não encontrado para esta loja.");
+          }
         }
 
         const unitPrice = variant
@@ -978,11 +989,12 @@ export async function createManualSaleAction(
         const order = await tx.order.create({
           data: {
             storeId: user.storeId!,
+            customerId: parsed.data.customerId || null,
             customerName: parsed.data.customerName || "Venda presencial",
-            customerPhone: "Nao informado",
+            customerPhone: "Não informado",
             deliveryAddress: "Venda presencial",
-            deliveryDistrict: "Balcao",
-            deliveryCity: "Loja fisica",
+            deliveryDistrict: "Balcão",
+            deliveryCity: "Loja física",
             notes: parsed.data.notes || "Venda registrada manualmente no painel.",
             subtotal,
             paymentMethod: parsed.data.paymentMethod || "OTHER",
@@ -1046,7 +1058,7 @@ export async function createManualSaleAction(
     return {
       status: "error",
       message:
-        error instanceof Error ? error.message : "Nao foi possivel registrar a venda.",
+        error instanceof Error ? error.message : "Não foi possível registrar a venda.",
       resetToken: Date.now(),
     };
   }
@@ -1069,7 +1081,7 @@ export async function changePasswordAction(
   }
 
   if (newPassword !== confirmPassword) {
-    return { status: "error", message: "A confirmacao de senha nao confere.", resetToken: Date.now() };
+    return { status: "error", message: "A confirmação de senha não confere.", resetToken: Date.now() };
   }
 
   const dbUser = await prisma.user.findUnique({
@@ -1078,7 +1090,7 @@ export async function changePasswordAction(
   });
 
   if (!dbUser) {
-    return { status: "error", message: "Usuario nao encontrado.", resetToken: Date.now() };
+    return { status: "error", message: "Usuário não encontrado.", resetToken: Date.now() };
   }
 
   const valid = await verifyPassword(currentPassword, dbUser.passwordHash);

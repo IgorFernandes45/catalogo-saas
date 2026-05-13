@@ -132,7 +132,7 @@ export default async function ProductPage({
         ) : null}
         <section className="surface-card border border-white/70 p-6 sm:p-8">
           <Link href={`/loja/${slug}`} className="hidden text-sm font-semibold text-orange-600 md:inline-flex">
-            Voltar ao catalogo
+            Voltar ao catálogo
           </Link>
           <p className="mt-6 text-sm uppercase tracking-[0.25em] text-slate-500">
             {product.category.name}
@@ -182,7 +182,7 @@ export default async function ProductPage({
 
           <div className="mt-5 flex flex-wrap gap-2">
             <span className="rounded-full bg-slate-100 px-4 py-2 text-sm font-semibold text-slate-700">
-              Compra rapida
+              Compra rápida
             </span>
             {product.promotionalPrice ? (
               <span className="rounded-full bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700">
@@ -297,7 +297,7 @@ export default async function ProductPage({
               href={`/loja/${slug}`}
               className="inline-flex rounded-full border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300"
             >
-              Voltar ao catalogo
+              Voltar ao catálogo
             </Link>
           </div>
         </section>

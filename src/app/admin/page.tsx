@@ -22,7 +22,7 @@ export default async function AdminDashboardPage() {
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="text-sm uppercase tracking-[0.25em] text-orange-500">
-                Operacao
+                Operação
               </p>
               <h2 className="mt-2 text-2xl font-semibold text-slate-950">
                 Lojas recentes
@@ -62,20 +62,20 @@ export default async function AdminDashboardPage() {
 
         <div className="surface-card p-6">
           <p className="text-sm uppercase tracking-[0.25em] text-orange-500">
-            Checklist do MVP
+            Plataforma
           </p>
           <h2 className="mt-2 text-2xl font-semibold text-slate-950">
-            O que ja esta pronto
+            Recursos disponíveis
           </h2>
           <div className="mt-6 grid gap-3 text-sm text-slate-600">
             {[
-              "Autenticacao com sessao em cookie assinado",
-              "Separacao entre super admin e usuarios da loja",
-              "Cadastro de lojas com identidade visual",
-              "Categorias dinamicas com atributos extras",
-              "Produtos com estoque, destaque e campos herdados da categoria",
-              "Catalogo publico com carrinho e checkout",
-              "Pedido salvo no banco e enviado para o WhatsApp",
+              "Autenticação segura com sessão em cookie assinado",
+              "Separação entre super admin e administradores de loja",
+              "Cadastro de lojas com identidade visual personalizada",
+              "Categorias dinâmicas com atributos extras",
+              "Produtos com estoque, destaque e variações",
+              "Catálogo público com carrinho e checkout via WhatsApp",
+              "Pedidos salvos e enviados automaticamente ao WhatsApp",
             ].map((item) => (
               <div key={item} className="rounded-2xl bg-slate-50 px-4 py-3">
                 {item}

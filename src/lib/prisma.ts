@@ -8,7 +8,7 @@ declare global {
 const connectionString = process.env.DATABASE_URL;
 
 if (!connectionString) {
-  throw new Error("DATABASE_URL nao configurada.");
+  throw new Error("DATABASE_URL não configurada.");
 }
 
 const adapter = new PrismaNeon({ connectionString });

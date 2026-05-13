@@ -20,13 +20,13 @@ const appDisplay = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
-  title: "Catalogo SaaS Multiloja",
+  title: "Catálogo SaaS Multiloja",
   description:
-    "MVP de SaaS multiloja com painel administrativo, catalogo publico premium, carrinho e pedido no WhatsApp.",
+    "SaaS multiloja com painel administrativo, catálogo público premium, carrinho e pedido no WhatsApp.",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
-    title: "Catalogo SaaS",
+    title: "Catálogo SaaS",
     statusBarStyle: "default",
   },
 };

@@ -39,7 +39,7 @@ export function buildWhatsAppMessage(order: WhatsAppOrder) {
   ].filter(Boolean);
 
   const lines = [
-    "Ola, quero fazer este pedido:",
+    "Olá, quero fazer este pedido:",
     "",
     `Loja: ${order.storeName}`,
     "",
@@ -48,7 +48,7 @@ export function buildWhatsAppMessage(order: WhatsAppOrder) {
   ];
 
   lines.push(
-    addressParts.length ? `Endereco: ${addressParts.join(", ")}` : "Endereco: Nao informado",
+    addressParts.length ? `Endereço: ${addressParts.join(", ")}` : "Endereço: Não informado",
   );
 
   if (order.deliveryComplement) {
@@ -56,7 +56,7 @@ export function buildWhatsAppMessage(order: WhatsAppOrder) {
   }
 
   if (order.deliveryReference) {
-    lines.push(`Referencia: ${order.deliveryReference}`);
+    lines.push(`Referência: ${order.deliveryReference}`);
   }
 
   lines.push("", "Itens:");
@@ -70,7 +70,7 @@ export function buildWhatsAppMessage(order: WhatsAppOrder) {
     lines.push(
       `${index + 1}. ${item.productName}${item.attributes?.length ? ` - ${item.attributes.join(" - ")}` : ""}`,
       `Qtd: ${item.quantity}`,
-      `Preco: ${formatCurrency(item.unitPrice)}`,
+      `Preço: ${formatCurrency(item.unitPrice)}`,
     );
 
     if (item.notes) {
@@ -83,7 +83,7 @@ export function buildWhatsAppMessage(order: WhatsAppOrder) {
   lines.push(`Subtotal: ${formatCurrency(subtotal)}`);
 
   if (order.notes) {
-    lines.push("", `Observacoes: ${order.notes}`);
+    lines.push("", `Observações: ${order.notes}`);
   }
 
   return lines.join("\n");
@@ -103,11 +103,11 @@ export function buildQuickBuyMessage({
   productUrl,
 }: QuickBuyMessage) {
   const lines = [
-    "Ola, quero comprar este item agora:",
+    "Olá, quero comprar este item agora:",
     "",
     `Loja: ${storeName}`,
     `Produto: ${productName}`,
-    `Preco: ${formatCurrency(unitPrice)}`,
+    `Preço: ${formatCurrency(unitPrice)}`,
   ];
 
   if (attributes.length) {

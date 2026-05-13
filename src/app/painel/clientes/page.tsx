@@ -38,7 +38,7 @@ export default async function CustomersPage({
           Base de clientes
         </h1>
         <p className="mt-3 text-sm leading-7 text-slate-600">
-          Cadastre clientes da loja. Apenas o nome e obrigatorio; o restante pode ser preenchido depois.
+          Cadastre clientes da loja. Apenas o nome é obrigatório; o restante pode ser preenchido depois.
         </p>
         <div className="mt-6">
           <CustomerForm />

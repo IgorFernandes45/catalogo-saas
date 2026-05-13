@@ -85,7 +85,7 @@ export function ProductAdminForm({
   action,
   submitLabel = "Salvar produto",
   successTitle = "Produto salvo",
-  errorTitle = "Nao foi possivel salvar",
+  errorTitle = "Não foi possível salvar",
   storeProfile = "CUSTOM",
   productAttributesJson,
   catalogUsesImages = true,
@@ -167,9 +167,9 @@ export function ProductAdminForm({
     if (!isVariantProduct) {
       const parsed = parseCurrency(price);
       if (!price.trim()) {
-        errors.price = "Informe o preco do produto.";
+        errors.price = "Informe o preço do produto.";
       } else if (isNaN(parsed) || parsed <= 0) {
-        errors.price = "Preco invalido. Use o formato 59,90.";
+        errors.price = "Preço inválido. Use o formato 59,90.";
       }
     }
     return errors;
@@ -280,7 +280,7 @@ export function ProductAdminForm({
               <label className="grid gap-1.5 text-sm font-medium text-slate-700">
                 <span className="flex items-center gap-2">
                   <Sparkles className="size-3.5 text-orange-500" />
-                  Produto base (adicionando variacao)
+                  Produto base (adicionando variação)
                 </span>
                 <select
                   value={parentProductId}
@@ -315,7 +315,7 @@ export function ProductAdminForm({
               className="flex w-full items-center justify-between gap-3 text-sm font-medium text-slate-600 transition hover:text-slate-900"
             >
               <span>
-                Adicionar variacao (cor, tamanho...) a um produto ja cadastrado?
+                Adicionar variação (cor, tamanho...) a um produto já cadastrado?
               </span>
               <ChevronDown className="size-4 shrink-0 text-slate-400" />
             </button>
@@ -326,10 +326,10 @@ export function ProductAdminForm({
       {isAddingExistingVariation && selectedParentProduct ? (
         <div className="rounded-[24px] border border-orange-200 bg-orange-50 px-4 py-3 text-sm leading-6 text-orange-900">
           <p className="font-semibold">
-            Adicionando variacao a: {selectedParentProduct.name}
+            Adicionando variação a: {selectedParentProduct.name}
           </p>
           <p className="text-xs">
-            Preencha apenas os dados da nova variacao abaixo.
+            Preencha apenas os dados da nova variação abaixo.
           </p>
         </div>
       ) : null}
@@ -367,20 +367,20 @@ export function ProductAdminForm({
               </label>
 
               <label className="grid gap-2 text-sm font-medium text-slate-700">
-                Descricao curta
+                Descrição curta
                 <textarea
                   name="shortDescription"
                   rows={2}
                   defaultValue={initialValues?.shortDescription || ""}
                   className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400"
-                  placeholder="Uma frase que aparece no catalogo. Ex.: 100% algodao, lavagem a mao."
+                  placeholder="Uma frase que aparece no catálogo. Ex.: 100% algodão, lavagem a mão."
                 />
               </label>
             </div>
           ) : null}
 
-          {/* Images */}
-          {catalogUsesImages ? (
+          {/* Images — only for simple products; variants manage photos per variation */}
+          {!isVariantProduct && catalogUsesImages ? (
             <div className="rounded-[28px] border border-slate-200 bg-white p-5">
               <p className="text-sm font-semibold text-slate-950">Fotos</p>
               <p className="mt-1 text-xs text-slate-500">{profilePreset.imageHint}</p>
@@ -391,7 +391,7 @@ export function ProductAdminForm({
                   label="Foto principal"
                   purpose="product"
                   initialUrl={initialValues?.imageUrl || ""}
-                  helpText="Aparece no card do catalogo."
+                  helpText="Aparece no card do catálogo."
                 />
                 <MultiImageUploadField
                   key={`product-gallery-${formResetKey}`}
@@ -402,7 +402,7 @@ export function ProductAdminForm({
                     .split("\n")
                     .map((s) => s.trim())
                     .filter(Boolean)}
-                  helpText="Galeria na pagina do produto."
+                  helpText="Galeria na página do produto."
                 />
               </div>
             </div>
@@ -425,11 +425,11 @@ export function ProductAdminForm({
           {!isVariantProduct ? (
             <div className="rounded-[28px] border border-slate-200 bg-white p-5">
               <p className="text-sm font-semibold text-slate-950">
-                Preco e estoque
+                Preço e estoque
               </p>
               <div className="mt-4 grid gap-4 sm:grid-cols-2">
                 <label className="grid gap-2 text-sm font-medium text-slate-700">
-                  Preco normal
+                  Preço normal
                   <input
                     name="price"
                     value={price}
@@ -454,7 +454,7 @@ export function ProductAdminForm({
                 </label>
 
                 <label className="grid gap-2 text-sm font-medium text-slate-700">
-                  Preco promocional
+                  Preço promocional
                   <input
                     name="promotionalPrice"
                     value={promotionalPrice}
@@ -487,7 +487,7 @@ export function ProductAdminForm({
                 </label>
 
                 <label className="grid gap-2 text-sm font-medium text-slate-700">
-                  SKU / codigo interno
+                  SKU / código interno
                   <input
                     name="sku"
                     defaultValue={initialValues?.sku || ""}
@@ -497,7 +497,7 @@ export function ProductAdminForm({
                 </label>
 
                 <label className="grid gap-2 text-sm font-medium text-slate-700">
-                  Codigo de barras
+                  Código de barras
                   <div className="grid grid-cols-[1fr_auto] gap-2">
                     <input
                       ref={barcodeRef}
@@ -526,7 +526,7 @@ export function ProductAdminForm({
                 <div className="mt-4 grid grid-cols-3 gap-3 rounded-[20px] bg-slate-50 px-4 py-3 text-sm">
                   <p>
                     <span className="block text-[10px] uppercase tracking-[0.14em] text-slate-500">
-                      Preco final
+                      Preço final
                     </span>
                     <strong className="text-slate-950">
                       {formatCurrency(finalPrice)}
@@ -561,10 +561,10 @@ export function ProductAdminForm({
             </div>
           ) : (
             <div className="rounded-[28px] border border-orange-200 bg-orange-50 px-5 py-4 text-sm leading-6 text-orange-900">
-              <p className="font-semibold">Preco e estoque por variacao</p>
+              <p className="font-semibold">Preço e estoque por variação</p>
               <p className="text-xs">
-                Cada variacao tem seu proprio preco, estoque, foto e codigo de barras. Preencha
-                esses dados na secao de variacoes abaixo.
+                Cada variação tem seu próprio preço, estoque, foto e código de barras. Preencha
+                esses dados na seção de variações abaixo.
               </p>
             </div>
           )}
@@ -611,7 +611,7 @@ export function ProductAdminForm({
               </div>
             ) : (
               <p className="mt-3 text-xs text-slate-400">
-                Desativado — produto simples com um preco e um estoque.
+                Desativado — produto simples com um preço e um estoque.
               </p>
             )}
           </div>
@@ -621,7 +621,7 @@ export function ProductAdminForm({
         <div className="grid gap-5 content-start">
           {/* Organization */}
           <div className="rounded-[28px] border border-slate-200 bg-white p-5">
-            <p className="text-sm font-semibold text-slate-950">Organizacao</p>
+            <p className="text-sm font-semibold text-slate-950">Organização</p>
 
             <div className="mt-4 grid gap-4">
               {!isAddingExistingVariation ? (
@@ -703,7 +703,7 @@ export function ProductAdminForm({
 
           {/* Publication */}
           <div className="rounded-[28px] border border-slate-200 bg-white p-5">
-            <p className="text-sm font-semibold text-slate-950">Publicacao</p>
+            <p className="text-sm font-semibold text-slate-950">Publicação</p>
             <div className="mt-4 grid gap-3">
               <label className="flex cursor-pointer items-center gap-3 text-sm text-slate-700">
                 <input
@@ -712,7 +712,7 @@ export function ProductAdminForm({
                   defaultChecked={initialValues ? initialValues.isActive : true}
                   className="size-4 rounded border-slate-300 accent-slate-950"
                 />
-                Produto ativo no catalogo
+                Produto ativo no catálogo
               </label>
               <label className="flex cursor-pointer items-center gap-3 text-sm text-slate-700">
                 <input
@@ -735,7 +735,7 @@ export function ProductAdminForm({
                 rows={3}
                 defaultValue={initialValues?.notes || ""}
                 className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900"
-                placeholder="Nao aparece no catalogo. Ex.: fornecedor, lote."
+                placeholder="Não aparece no catálogo. Ex.: fornecedor, lote."
               />
             </label>
           </div>
@@ -756,7 +756,7 @@ export function ProductAdminForm({
             </button>
             {!isEditing ? (
               <p className="mt-3 text-center text-xs text-slate-400">
-                Apos salvar, o form e resetado para voce cadastrar o proximo produto.
+                Após salvar, o formulário é resetado para você cadastrar o próximo produto.
               </p>
             ) : null}
           </div>

@@ -84,7 +84,7 @@ export function StoreProfileForm({ store }: StoreProfileFormProps) {
             title:
               result.status === "success"
                 ? "Perfil salvo"
-                : "Nao foi possivel salvar o perfil",
+                : "Não foi possível salvar o perfil",
             message: result.message,
           });
 
@@ -104,7 +104,7 @@ export function StoreProfileForm({ store }: StoreProfileFormProps) {
             Escolha o tipo da loja para acelerar o cadastro
           </h2>
           <p className="mt-2 text-sm leading-6 text-slate-600">
-            O sistema mostra apenas campos compativeis com esse perfil. Voce pode
+            O sistema mostra apenas campos compatíveis com esse perfil. Você pode
             ativar ou desativar atributos quando quiser.
           </p>
         </div>
@@ -217,7 +217,7 @@ export function StoreProfileForm({ store }: StoreProfileFormProps) {
           />
         </label>
         <label className="grid gap-2 text-sm font-medium text-slate-700">
-          Slug publico
+          Slug público
           <input
             required
             name="slug"
@@ -226,7 +226,7 @@ export function StoreProfileForm({ store }: StoreProfileFormProps) {
           />
         </label>
         <label className="grid gap-2 text-sm font-medium text-slate-700 lg:col-span-2">
-          Descricao
+          Descrição
           <textarea
             name="description"
             rows={4}
@@ -287,7 +287,7 @@ export function StoreProfileForm({ store }: StoreProfileFormProps) {
 
       <section className="grid gap-4 rounded-[28px] border border-slate-200 bg-slate-50 p-5">
         <div>
-          <p className="text-sm font-semibold text-slate-950">Fotos no catalogo</p>
+          <p className="text-sm font-semibold text-slate-950">Fotos no catálogo</p>
           <p className="mt-1 text-sm leading-6 text-slate-600">
             Se desativar, os produtos aparecem em cards de texto sem area de imagem.
           </p>

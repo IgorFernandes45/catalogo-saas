@@ -17,7 +17,7 @@ export default async function AdminLayout({
   return (
     <DashboardShell
       title="Painel do super admin"
-      subtitle="Gerencie lojas, acompanhe metricas da plataforma e mantenha o ecossistema multiloja organizado."
+      subtitle="Gerencie lojas, acompanhe métricas da plataforma e mantenha o ecossistema multiloja organizado."
       session={{
         userId: user.id,
         name: user.name,

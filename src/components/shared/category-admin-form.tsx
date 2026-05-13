@@ -39,7 +39,7 @@ export function CategoryAdminForm({
   action = createCategoryAction,
   submitLabel = "Criar categoria",
   successTitle = "Categoria criada",
-  errorTitle = "Nao foi possivel salvar a categoria",
+  errorTitle = "Não foi possível salvar a categoria",
   initialValues,
 }: CategoryAdminFormProps) {
   const formRef = useRef<HTMLFormElement>(null);
@@ -94,7 +94,7 @@ export function CategoryAdminForm({
         />
       </label>
       <label className="grid gap-2 text-sm font-medium text-slate-700">
-        Descricao
+        Descrição
         <textarea
           name="description"
           rows={3}
@@ -111,7 +111,7 @@ export function CategoryAdminForm({
         helpText="Use uma capa da categoria para enriquecer o catálogo e futuras vitrines."
       />
       <label className="grid gap-2 text-sm font-medium text-slate-700">
-        Ordem de exibicao
+        Ordem de exibição
         <input
           type="number"
           name="sortOrder"
@@ -131,8 +131,8 @@ export function CategoryAdminForm({
           Categoria ativa
         </label>
         <p className="text-xs leading-6 text-slate-500">
-          Categoria agora serve apenas para organizar e filtrar produtos. Cor,
-          tamanho, preco, foto e estoque ficam no cadastro manual do produto.
+          A categoria serve apenas para organizar e filtrar produtos. Cor,
+          tamanho, preço, foto e estoque ficam no cadastro de cada produto.
         </p>
       </div>
 

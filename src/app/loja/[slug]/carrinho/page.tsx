@@ -31,7 +31,7 @@ export default async function CartPage({
             href={`/loja/${slug}`}
             className="rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-300"
           >
-            Voltar ao catalogo
+            Voltar ao catálogo
           </Link>
         </div>
 

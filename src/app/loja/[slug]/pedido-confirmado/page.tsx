@@ -75,7 +75,7 @@ export default function PedidoConfirmadoPage() {
               Abrindo WhatsApp em {countdown}s
             </p>
             <p className="mt-1 text-xs leading-5 text-emerald-700">
-              Voce vai finalizar o pedido direto no WhatsApp da loja.
+              Você vai finalizar o pedido direto no WhatsApp da loja.
             </p>
           </div>
 

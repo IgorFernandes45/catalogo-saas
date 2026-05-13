@@ -112,7 +112,7 @@ export const storeProfilePresets: StoreProfilePreset[] = [
       { key: "model", label: "Modelo", placeholder: "Opcional" },
     ],
     variationTypes: ["Cor", "Tamanho", "Modelo"],
-    imageHint: "Escolha as variacoes que fizerem sentido para sua loja.",
+    imageHint: "Escolha as variações que fizerem sentido para sua loja.",
   },
 ];
 

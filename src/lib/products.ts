@@ -78,7 +78,7 @@ function assertUniqueProductVariants(variants: StoreProductInput["variants"]) {
 
   for (const variant of variants) {
     if (!variant.priceOverride || variant.priceOverride <= 0) {
-      throw new Error("Toda variacao precisa ter preco de venda proprio.");
+      throw new Error("Toda variação precisa ter preço de venda próprio.");
     }
 
     const key = Object.entries(variant.attributes)
@@ -87,7 +87,7 @@ function assertUniqueProductVariants(variants: StoreProductInput["variants"]) {
       .join("|");
 
     if (seen.has(key)) {
-      throw new Error("Existem variacoes repetidas neste produto.");
+      throw new Error("Existem variações repetidas neste produto.");
     }
 
     seen.add(key);
@@ -128,7 +128,7 @@ export async function createStoreProduct({
   });
 
   if (!category) {
-    throw new Error("Categoria nao encontrada para esta loja.");
+    throw new Error("Categoria não encontrada para esta loja.");
   }
 
   assertUniqueProductVariants(input.variants);
@@ -213,7 +213,7 @@ export async function appendStoreProductVariant({
   const nextVariant = input.variants[0];
 
   if (!nextVariant) {
-    throw new Error("Informe os dados da variacao antes de salvar.");
+    throw new Error("Informe os dados da variação antes de salvar.");
   }
 
   const product = await db.product.findFirst({
@@ -232,7 +232,7 @@ export async function appendStoreProductVariant({
   });
 
   if (!product) {
-    throw new Error("Produto base nao encontrado para esta loja.");
+    throw new Error("Produto base não encontrado para esta loja.");
   }
 
   assertUniqueProductVariants([
@@ -247,7 +247,7 @@ export async function appendStoreProductVariant({
     nextVariant.barcode?.trim()
     && product.variants.some((variant) => variant.barcode === nextVariant.barcode?.trim())
   ) {
-    throw new Error("Ja existe uma variacao com este codigo de barras.");
+    throw new Error("Já existe uma variação com este código de barras.");
   }
 
   await db.product.update({
@@ -312,11 +312,11 @@ export async function updateStoreProduct({
   ]);
 
   if (!category) {
-    throw new Error("Categoria nao encontrada para esta loja.");
+    throw new Error("Categoria não encontrada para esta loja.");
   }
 
   if (!existingProduct) {
-    throw new Error("Produto nao encontrado para esta loja.");
+    throw new Error("Produto não encontrado para esta loja.");
   }
 
   assertUniqueProductVariants(input.variants);
@@ -435,7 +435,7 @@ export async function deleteStoreProduct({
   });
 
   if (!product) {
-    throw new Error("Produto nao encontrado para esta loja.");
+    throw new Error("Produto não encontrado para esta loja.");
   }
 
   if (product._count.orderItems > 0 || product._count.stockMovements > 0) {

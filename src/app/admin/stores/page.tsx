@@ -55,7 +55,7 @@ export default async function AdminStoresPage({
             <tr className="text-sm uppercase tracking-[0.2em] text-slate-500">
               <th className="px-4 py-3">Loja</th>
               <th className="px-4 py-3">Gestor</th>
-              <th className="px-4 py-3">Metricas</th>
+              <th className="px-4 py-3">Métricas</th>
               <th className="px-4 py-3">Status</th>
               <th className="px-4 py-3">Criada</th>
               <th className="px-4 py-3"></th>
@@ -70,8 +70,8 @@ export default async function AdminStoresPage({
                   <p className="mt-2">{store.whatsappNumber}</p>
                   <span className="mt-2 inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
                     {store.accessMode === "CATALOG_ONLY"
-                      ? "Somente catalogo"
-                      : "Catalogo + vendas"}
+                      ? "Somente catálogo"
+                      : "Catálogo + vendas"}
                   </span>
                 </td>
                 <td className="px-4 py-4">
@@ -105,7 +105,7 @@ export default async function AdminStoresPage({
                       href={`/loja/${store.slug}`}
                       className="font-semibold text-slate-700"
                     >
-                      Abrir catalogo
+                      Abrir catálogo
                     </Link>
                   </div>
                 </td>

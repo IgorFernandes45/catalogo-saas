@@ -31,7 +31,7 @@ type VariantDraft = {
   isActive: boolean;
 };
 
-const fallbackVariationTypes = ["Cor", "Tamanho", "Numeracao", "Tom", "Volume", "Sabor", "Modelo"];
+const fallbackVariationTypes = ["Cor", "Tamanho", "Numeração", "Tom", "Volume", "Sabor", "Modelo"];
 
 function decimalInput(value: number | undefined) {
   return value === undefined ? "" : String(value).replace(".", ",");
@@ -177,21 +177,21 @@ export function VariantBuilderField({
       const payload = (await response.json()) as { url?: string; error?: string };
 
       if (!response.ok || !payload.url) {
-        throw new Error(payload.error || "Nao foi possivel enviar a imagem.");
+        throw new Error(payload.error || "Não foi possível enviar a imagem.");
       }
 
       updateRow({ imageUrl: payload.url });
       notify({
         tone: "success",
         title: "Imagem enviada",
-        message: "Foto da variacao salva no Cloudinary.",
+        message: "Foto da variação salva no Cloudinary.",
       });
     } catch (error) {
       notify({
         tone: "error",
         title: "Falha no upload",
         message:
-          error instanceof Error ? error.message : "Nao foi possivel enviar a imagem.",
+          error instanceof Error ? error.message : "Não foi possível enviar a imagem.",
       });
     } finally {
       setUploading(false);
@@ -204,13 +204,13 @@ export function VariantBuilderField({
 
       <div>
         <p className="text-sm uppercase tracking-[0.2em] text-orange-500">
-          Variacao vendavel
+          Variação vendável
         </p>
         <h3 className="mt-2 text-xl font-semibold text-slate-950">
-          Cadastre uma variacao por vez
+          Cadastre uma variação por vez
         </h3>
         <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-          Cada variacao tem seu proprio codigo de barras, preco, estoque e foto.
+          Cada variação tem seu próprio código de barras, preço, estoque e foto.
           Para vermelho 32 e vermelho 33, cadastre uma e depois repita para a outra.
         </p>
       </div>
@@ -218,7 +218,7 @@ export function VariantBuilderField({
       <section className="grid gap-4 rounded-[24px] bg-white p-4">
         <div>
           <p className="text-sm font-semibold text-slate-950">
-            Quais campos identificam esta variacao?
+            Quais campos identificam esta variação?
           </p>
           <p className="mt-1 text-xs leading-5 text-slate-500">
             Marque apenas o que esse produto usa. Ex.: Cor + Tamanho, Tom, Volume ou Sabor.
@@ -247,7 +247,7 @@ export function VariantBuilderField({
             value={customType}
             onChange={(event) => setCustomType(event.target.value)}
             className="min-w-0 rounded-2xl border border-slate-200 px-4 py-3 text-sm"
-            placeholder="Outro: Cobertura, Fragrancia, Material"
+            placeholder="Outro: Cobertura, Fragrância, Material"
           />
           <button
             type="button"
@@ -286,7 +286,7 @@ export function VariantBuilderField({
                   placeholder={
                     type === "Cor"
                       ? "Vermelho"
-                      : type === "Tamanho" || type === "Numeracao"
+                      : type === "Tamanho" || type === "Numeração"
                         ? "32"
                         : "Ex.: 500ml, Morango, Bivolt"
                   }
@@ -300,7 +300,7 @@ export function VariantBuilderField({
       <section className="grid gap-4 rounded-[24px] bg-white p-4">
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="grid min-w-0 gap-2 text-sm font-medium text-slate-700">
-            Codigo de barras
+            Código de barras
             <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-2">
               <input
                 ref={barcodeRef}
@@ -347,13 +347,13 @@ export function VariantBuilderField({
               onChange={(event) => updateRow({ isActive: event.target.checked })}
               className="size-4 rounded border-slate-300"
             />
-            Ativo no catalogo
+            Ativo no catálogo
           </label>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="grid min-w-0 gap-2 text-sm font-medium text-slate-700">
-            Preco de custo
+            Preço de custo
             <input
               value={row.costPriceOverride}
               onChange={(event) => updateRow({ costPriceOverride: event.target.value })}
@@ -362,7 +362,7 @@ export function VariantBuilderField({
             />
           </label>
           <label className="grid min-w-0 gap-2 text-sm font-medium text-slate-700">
-            Preco de venda da variacao
+            Preço de venda da variação
             <input
               required
               value={row.priceOverride}
@@ -372,7 +372,7 @@ export function VariantBuilderField({
             />
           </label>
           <label className="grid min-w-0 gap-2 text-sm font-medium text-slate-700">
-            Preco promocional
+            Preço promocional
             <input
               value={row.promotionalPriceOverride}
               onChange={(event) => updateRow({ promotionalPriceOverride: event.target.value })}
@@ -398,7 +398,7 @@ export function VariantBuilderField({
         <div className="grid gap-3 rounded-[22px] bg-slate-50 p-4 text-sm sm:grid-cols-3">
           <p>
             <span className="block text-xs uppercase tracking-[0.14em] text-slate-500">
-              Preco final
+              Preço final
             </span>
             <strong>{formatCurrency(calculated.finalPrice)}</strong>
           </p>
@@ -422,10 +422,10 @@ export function VariantBuilderField({
         <input type="hidden" value={row.imageUrl} readOnly />
         <div>
           <p className="text-sm font-semibold text-slate-950">
-            Foto especifica da variacao
+            Foto específica da variação
           </p>
           <p className="mt-1 text-xs leading-5 text-slate-500">
-            Envie uma foto para esta opcao. O catalogo usa a imagem automaticamente.
+            Envie uma foto para esta opção. O catálogo usa a imagem automaticamente.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
@@ -451,7 +451,7 @@ export function VariantBuilderField({
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={row.imageUrl}
-              alt={buildLabel(row.attributes) || "Foto da variacao"}
+              alt={buildLabel(row.attributes) || "Foto da variação"}
               className="h-24 w-24 rounded-[20px] object-cover"
             />
           ) : null}

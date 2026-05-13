@@ -56,7 +56,7 @@ export default async function OrdersPage({
       : {}),
   };
 
-  const [totalOrders, orders, categories] = await Promise.all([
+  const [totalOrders, orders, categories, customers] = await Promise.all([
     prisma.order.count({
       where,
     }),
@@ -88,6 +88,12 @@ export default async function OrdersPage({
       },
       orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
     }),
+    prisma.customer.findMany({
+      where: { storeId: user.storeId! },
+      select: { id: true, name: true, phone: true },
+      orderBy: { name: "asc" },
+      take: 300,
+    }),
   ]);
   const totalPages = Math.max(1, Math.ceil(totalOrders / pageSize));
 
@@ -107,14 +113,14 @@ export default async function OrdersPage({
 
   return (
     <div className="grid gap-6">
-      <ManualSalePanel categories={categories} />
+      <ManualSalePanel categories={categories} customers={customers} />
       <section className="surface-card p-6">
         <p className="text-sm uppercase tracking-[0.25em] text-orange-500">Pedidos</p>
         <h1 className="mt-2 text-3xl font-semibold text-slate-950">
           Fila de pedidos pendentes
         </h1>
         <p className="mt-3 text-sm leading-7 text-slate-600">
-          Aqui ficam apenas os pedidos que ainda precisam ser marcados como vendidos ou cancelados. Depois de finalizar, eles saem da fila.
+          Pedidos pendentes de confirmação. Marque cada um como vendido ou cancelado para removê-lo da fila.
         </p>
 
         <form className="mt-6 grid gap-3 rounded-[24px] bg-slate-50 p-4 md:grid-cols-[1fr_auto]">
@@ -142,7 +148,7 @@ export default async function OrdersPage({
         </form>
 
         <p className="mt-4 text-sm text-slate-500">
-          Mostrando {orders.length} pedido{orders.length === 1 ? "" : "s"} pendente{orders.length === 1 ? "" : "s"} nesta pagina, de um total de {totalOrders}.
+          Mostrando {orders.length} pedido{orders.length === 1 ? "" : "s"} pendente{orders.length === 1 ? "" : "s"} nesta página, de um total de {totalOrders}.
         </p>
 
         <div className="mt-6 grid gap-4">
@@ -164,15 +170,15 @@ export default async function OrdersPage({
               </div>
 
               <p className="mt-4 text-sm leading-7 text-slate-600">
-                {order.deliveryAddress === "Nao informado"
-                  ? "Endereco nao informado pelo cliente."
+                {order.deliveryAddress === "Não informado"
+                  ? "Endereço não informado pelo cliente."
                   : `${order.deliveryAddress}, ${order.deliveryNumber || "s/n"}, ${order.deliveryDistrict}, ${order.deliveryCity}`}
               </p>
               {order.deliveryComplement ? (
                 <p className="text-sm text-slate-500">Complemento: {order.deliveryComplement}</p>
               ) : null}
               {order.deliveryReference ? (
-                <p className="text-sm text-slate-500">Referencia: {order.deliveryReference}</p>
+                <p className="text-sm text-slate-500">Referência: {order.deliveryReference}</p>
               ) : null}
               {order.notes ? (
                 <p className="mt-2 text-sm text-slate-600">Obs: {order.notes}</p>
@@ -209,9 +215,9 @@ export default async function OrdersPage({
           {!orders.length ? (
             <EmptyStateCard
               title="Nenhum pedido pendente na fila"
-              description="Quando os clientes enviarem pedidos pelo catalogo, eles vao aparecer aqui ate voce marcar como vendido ou cancelado."
+              description="Quando os clientes enviarem pedidos pelo catálogo, eles aparecem aqui até você marcar como vendido ou cancelado."
               actionHref={`/loja/${user.store?.slug}`}
-              actionLabel="Abrir catalogo da loja"
+              actionLabel="Abrir catálogo da loja"
             />
           ) : null}
         </div>
@@ -219,7 +225,7 @@ export default async function OrdersPage({
         {totalOrders > pageSize ? (
           <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-[24px] border border-slate-200 bg-white px-4 py-4">
             <p className="text-sm text-slate-500">
-              Pagina {currentPage} de {totalPages}
+              Página {currentPage} de {totalPages}
             </p>
             <div className="flex gap-3">
               <Link
@@ -242,7 +248,7 @@ export default async function OrdersPage({
                     : "border border-slate-200 bg-white text-slate-700 hover:border-slate-300"
                 }`}
               >
-                Proxima
+                Próxima
               </Link>
             </div>
           </div>

@@ -71,12 +71,12 @@ export function CategoryManagementCard({
         </span>
       </div>
 
-      <p className="mt-3 text-sm text-slate-600">{category.description || "Sem descricao"}</p>
+      <p className="mt-3 text-sm text-slate-600">{category.description || "Sem descrição"}</p>
 
       <div className="mt-4">
         <EmptyStateCard
-          title="Categoria de organizacao"
-          description="Use apenas para separar e filtrar produtos. As variacoes de cor, tamanho, foto, preco e estoque ficam dentro de cada produto."
+          title="Categoria de organização"
+          description="Use apenas para separar e filtrar produtos. As variações de cor, tamanho, foto, preço e estoque ficam dentro de cada produto."
         />
       </div>
 
@@ -87,15 +87,15 @@ export function CategoryManagementCard({
           className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
         >
           <PencilLine className="size-4" />
-          {isEditing ? "Fechar edicao" : "Editar categoria"}
+          {isEditing ? "Fechar edição" : "Editar categoria"}
         </button>
         <MutationActionButton
           action={deleteAction}
-          confirmMessage={`Deseja excluir a categoria ${category.name}? Essa acao so funciona se ela nao tiver produtos vinculados.`}
+          confirmMessage={`Deseja excluir a categoria "${category.name}"? Esta ação só funciona se ela não tiver produtos vinculados.`}
           idleLabel="Excluir categoria"
           pendingLabel="Excluindo..."
           successTitle="Categoria removida"
-          errorTitle="Nao foi possivel excluir a categoria"
+          errorTitle="Não foi possível excluir a categoria"
         />
       </div>
 
@@ -110,7 +110,7 @@ export function CategoryManagementCard({
               action={updateAction}
               submitLabel="Salvar categoria"
               successTitle="Categoria atualizada"
-              errorTitle="Nao foi possivel atualizar a categoria"
+              errorTitle="Não foi possível atualizar a categoria"
               initialValues={{
                 name: category.name,
                 slug: category.slug,

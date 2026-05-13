@@ -10,11 +10,11 @@ export async function GET(
   const user = await getCurrentUserBasic();
 
   if (!user || !user.isActive) {
-    return NextResponse.json({ error: "Nao autenticado." }, { status: 401 });
+    return NextResponse.json({ error: "Não autenticado." }, { status: 401 });
   }
 
   if (user.role === "SUPER_ADMIN" || !user.storeId) {
-    return NextResponse.json({ error: "Sem permissao para esta rota." }, { status: 403 });
+    return NextResponse.json({ error: "Sem permissão para esta rota." }, { status: 403 });
   }
 
   const { id } = await context.params;
@@ -30,7 +30,7 @@ export async function GET(
   });
 
   if (!product) {
-    return NextResponse.json({ error: "Produto nao encontrado." }, { status: 404 });
+    return NextResponse.json({ error: "Produto não encontrado." }, { status: 404 });
   }
 
   if (!product.trackStock) {

@@ -146,7 +146,7 @@ export async function uploadImageToCloudinary({
 
   if (!response.ok || !payload.secure_url || !payload.public_id) {
     throw new Error(
-      payload.error?.message || "Nao foi possivel enviar a imagem para o Cloudinary.",
+      payload.error?.message || "Não foi possível enviar a imagem para o Cloudinary.",
     );
   }
 

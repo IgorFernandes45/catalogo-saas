@@ -38,7 +38,7 @@ export async function createStoreAction(formData: FormData) {
   const parsed = storeSchema.safeParse(buildStorePayload(formData));
 
   if (!parsed.success) {
-    redirect(`/admin/stores/new?error=${encodeURIComponent(parsed.error.issues[0]?.message || "Dados invalidos.")}`);
+    redirect(`/admin/stores/new?error=${encodeURIComponent(parsed.error.issues[0]?.message || "Dados inválidos.")}`);
   }
 
   if (!managerName || !managerEmail || managerPassword.length < 6) {
@@ -104,7 +104,7 @@ export async function updateStoreAction(formData: FormData) {
   const parsed = storeSchema.safeParse(buildStorePayload(formData));
 
   if (!parsed.success || !storeId) {
-    redirect(`/admin/stores/${storeId}/edit?error=${encodeURIComponent(parsed.error?.issues[0]?.message || "Dados invalidos.")}`);
+    redirect(`/admin/stores/${storeId}/edit?error=${encodeURIComponent(parsed.error?.issues[0]?.message || "Dados inválidos.")}`);
   }
 
   await prisma.store.update({

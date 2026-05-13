@@ -9,14 +9,14 @@ export default function Home() {
           <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
             <div>
               <p className="text-sm uppercase tracking-[0.45em] text-orange-300">
-                Catalogo comercial premium
+                Catálogo comercial premium
               </p>
               <h1 className="mt-4 max-w-3xl text-4xl font-semibold leading-tight lg:text-6xl">
-                Sua vitrine online pronta para atender clientes com rapidez e elegancia.
+                Sua vitrine online pronta para atender clientes com rapidez e elegância.
               </h1>
               <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-300">
                 Organize produtos, apresente ofertas e receba pedidos pelo WhatsApp em uma
-                experiencia simples para a loja e agradavel para o cliente.
+                experiência simples para a loja e agradável para o cliente.
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link
@@ -27,10 +27,10 @@ export default function Home() {
                   <ArrowRight className="size-4" />
                 </Link>
                 <Link
-                  href="/loja/casa-aurora-moda"
+                  href="/login"
                   className="inline-flex items-center gap-2 rounded-full border border-white/15 px-5 py-3 text-sm font-semibold text-white transition hover:border-orange-300 hover:text-orange-200"
                 >
-                  Ver catalogo
+                  Ver demonstração
                   <ShoppingBag className="size-4" />
                 </Link>
               </div>
@@ -38,19 +38,19 @@ export default function Home() {
 
             <div className="grid gap-4 rounded-[32px] border border-white/10 bg-white/5 p-6 backdrop-blur">
               <div className="rounded-3xl bg-white/8 p-5">
-                <p className="text-sm text-slate-300">Gestao centralizada</p>
-                <p className="mt-2 text-lg font-semibold">Lojas, produtos e relatorios</p>
+                <p className="text-sm text-slate-300">Gestão centralizada</p>
+                <p className="mt-2 text-lg font-semibold">Lojas, produtos e relatórios</p>
                 <p className="text-sm text-orange-200">Tudo em um painel claro</p>
               </div>
               <div className="rounded-3xl bg-white/8 p-5">
-                <p className="text-sm text-slate-300">Catalogos por perfil</p>
+                <p className="text-sm text-slate-300">Catálogos por perfil</p>
                 <p className="mt-2 text-lg font-semibold">Moda, beleza, bebidas e mais</p>
                 <p className="text-sm text-emerald-200">Campos adaptados para cada loja</p>
               </div>
               <div className="rounded-3xl bg-white/8 p-5">
                 <p className="text-sm text-slate-300">Atendimento direto</p>
                 <p className="mt-2 text-lg font-semibold">Compra pelo WhatsApp</p>
-                <p className="text-sm text-slate-300">Carrinho, variacoes e pedido formatado</p>
+                <p className="text-sm text-slate-300">Carrinho, variações e pedido formatado</p>
               </div>
             </div>
           </div>
@@ -62,17 +62,17 @@ export default function Home() {
               icon: Store,
               title: "Multi-tenant real",
               description:
-                "Cada loja trabalha no proprio ambiente, com dados separados e acesso seguro.",
+                "Cada loja trabalha no próprio ambiente, com dados separados e acesso seguro.",
             },
             {
               icon: LayoutDashboard,
-              title: "Operacao simplificada",
+              title: "Operação simplificada",
               description:
-                "Cadastro rapido, catalogo personalizavel e rotina diaria mais objetiva.",
+                "Cadastro rápido, catálogo personalizável e rotina diária mais objetiva.",
             },
             {
               icon: ShoppingBag,
-              title: "Venda rapida",
+              title: "Venda rápida",
               description:
                 "O cliente escolhe, monta o pedido e chama a loja pelo WhatsApp em poucos toques.",
             },

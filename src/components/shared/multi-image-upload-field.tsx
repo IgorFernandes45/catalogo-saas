@@ -66,7 +66,7 @@ export function MultiImageUploadField({
     };
 
     if (!response.ok || !payload.url) {
-      throw new Error(payload.error || "Nao foi possivel enviar a imagem.");
+      throw new Error(payload.error || "Não foi possível enviar a imagem.");
     }
 
     return payload.url;
@@ -83,7 +83,7 @@ export function MultiImageUploadField({
       notify({
         tone: "error",
         title: "Galeria cheia",
-        message: `A galeria aceita no maximo ${maxItems} imagens.`,
+        message: `A galeria aceita no máximo ${maxItems} imagens.`,
       });
       return;
     }
@@ -106,7 +106,7 @@ export function MultiImageUploadField({
         message:
           error instanceof Error
             ? error.message
-            : "Nao foi possivel enviar as imagens agora.",
+            : "Não foi possível enviar as imagens agora.",
       });
     } finally {
       setIsUploading(false);
@@ -190,7 +190,7 @@ export function MultiImageUploadField({
         />
 
         <p className="text-xs leading-5 text-slate-500">
-          As fotos sao enviadas e ficam organizadas automaticamente para o catalogo.
+          As fotos são enviadas e ficam organizadas automaticamente para o catálogo.
         </p>
       </div>
 

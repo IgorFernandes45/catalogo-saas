@@ -29,16 +29,23 @@ type ManualSaleProduct = {
   }>;
 };
 
-type ManualSaleCategory = {
+export type ManualSaleCategory = {
   id: string;
   name: string;
 };
 
-type ManualSaleFormProps = {
-  categories: ManualSaleCategory[];
+export type ManualSaleCustomer = {
+  id: string;
+  name: string;
+  phone: string | null;
 };
 
-export function ManualSaleForm({ categories }: ManualSaleFormProps) {
+type ManualSaleFormProps = {
+  categories: ManualSaleCategory[];
+  customers: ManualSaleCustomer[];
+};
+
+export function ManualSaleForm({ categories, customers }: ManualSaleFormProps) {
   const router = useRouter();
   const notify = useNotify();
   const [isPending, startTransition] = useTransition();
@@ -50,7 +57,7 @@ export function ManualSaleForm({ categories }: ManualSaleFormProps) {
   const [productVariantId, setProductVariantId] = useState("");
   const [quantity, setQuantity] = useState("1");
   const [paymentMethod, setPaymentMethod] = useState("PIX");
-  const [customerName, setCustomerName] = useState("");
+  const [customerId, setCustomerId] = useState("");
   const [notes, setNotes] = useState("");
   const [searchError, setSearchError] = useState<string | null>(null);
 
@@ -81,7 +88,7 @@ export function ManualSaleForm({ categories }: ManualSaleFormProps) {
         };
 
         if (!response.ok || !data.products) {
-          setSearchError(data.error || "Nao foi possivel buscar os produtos.");
+          setSearchError(data.error || "Não foi possível buscar os produtos.");
           setProducts([]);
           return;
         }
@@ -115,7 +122,7 @@ export function ManualSaleForm({ categories }: ManualSaleFormProps) {
           return;
         }
 
-        setSearchError("Nao foi possivel buscar os produtos.");
+        setSearchError("Não foi possível buscar os produtos.");
         setProducts([]);
       } finally {
         setIsSearching(false);
@@ -154,7 +161,11 @@ export function ManualSaleForm({ categories }: ManualSaleFormProps) {
           formData.set("productVariantId", productVariantId);
           formData.set("quantity", quantity);
           formData.set("paymentMethod", paymentMethod);
-          formData.set("customerName", customerName);
+          formData.set("customerId", customerId);
+          if (customerId) {
+            const selected = customers.find((c) => c.id === customerId);
+            if (selected) formData.set("customerName", selected.name);
+          }
           formData.set("notes", notes);
 
           startTransition(async () => {
@@ -165,7 +176,7 @@ export function ManualSaleForm({ categories }: ManualSaleFormProps) {
               title:
                 result.status === "success"
                   ? "Venda registrada"
-                  : "Nao foi possivel registrar a venda",
+                  : "Não foi possível registrar a venda",
               message: result.message,
             });
 
@@ -173,7 +184,7 @@ export function ManualSaleForm({ categories }: ManualSaleFormProps) {
               setProductId("");
               setProductVariantId("");
               setQuantity("1");
-              setCustomerName("");
+              setCustomerId("");
               setNotes("");
               router.refresh();
             }
@@ -189,14 +200,14 @@ export function ManualSaleForm({ categories }: ManualSaleFormProps) {
                 type="text"
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                placeholder="Digite ou leia codigo de barras"
+                placeholder="Digite ou leia código de barras"
                 className="w-full rounded-2xl border border-slate-200 bg-white py-3 pl-11 pr-4 text-sm"
                 autoComplete="off"
               />
             </div>
             <span className="inline-flex items-center gap-1 text-xs font-semibold text-slate-500">
               <ScanBarcode className="size-3.5" />
-              O leitor preenche este campo e seleciona o item quando o codigo for exato.
+              O leitor preenche este campo e seleciona o item quando o código for exato.
             </span>
           </label>
 
@@ -247,13 +258,13 @@ export function ManualSaleForm({ categories }: ManualSaleFormProps) {
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {selectedProduct?.variants.length ? (
             <label className="grid gap-2 text-sm font-medium text-slate-700">
-              Variacao
+              Variação
               <select
                 value={selectedVariantId}
                 onChange={(event) => setProductVariantId(event.target.value)}
                 className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm"
               >
-                <option value="">Selecione a variacao</option>
+                <option value="">Selecione a variação</option>
                 {selectedProduct.variants
                   .filter((variant) => variant.isActive)
                   .map((variant) => (
@@ -287,22 +298,27 @@ export function ManualSaleForm({ categories }: ManualSaleFormProps) {
             >
               <option value="PIX">Pix</option>
               <option value="CASH">Dinheiro</option>
-              <option value="DEBIT_CARD">Cartao debito</option>
-              <option value="CREDIT_CARD">Cartao credito</option>
-              <option value="BANK_TRANSFER">Transferencia</option>
+              <option value="DEBIT_CARD">Cartão débito</option>
+              <option value="CREDIT_CARD">Cartão crédito</option>
+              <option value="BANK_TRANSFER">Transferência</option>
               <option value="OTHER">Outro</option>
             </select>
           </label>
 
           <label className="grid gap-2 text-sm font-medium text-slate-700">
             Cliente
-            <input
-              type="text"
-              value={customerName}
-              onChange={(event) => setCustomerName(event.target.value)}
-              placeholder="Opcional"
-              className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm"
-            />
+            <select
+              value={customerId}
+              onChange={(event) => setCustomerId(event.target.value)}
+              className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900"
+            >
+              <option value="">Nenhum (avulso)</option>
+              {customers.map((customer) => (
+                <option key={customer.id} value={customer.id}>
+                  {customer.name}{customer.phone ? ` — ${customer.phone}` : ""}
+                </option>
+              ))}
+            </select>
           </label>
 
           <label className="grid gap-2 text-sm font-medium text-slate-700 xl:col-span-2">
@@ -330,7 +346,7 @@ export function ManualSaleForm({ categories }: ManualSaleFormProps) {
             </p>
             {selectedProduct ? (
               <p className="text-sm text-slate-600">
-                Preco aplicado:{" "}
+                Preço aplicado:{" "}
                 <span className="font-semibold text-slate-950">
                   {formatCurrency(
                     selectedVariant?.priceOverride

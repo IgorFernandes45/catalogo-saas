@@ -13,18 +13,18 @@ import { formatDateTime } from "@/lib/utils";
 
 function getMovementTypeLabel(type: string) {
   if (type === "MANUAL_DECREASE") {
-    return "Remocao manual";
+    return "Remoção manual";
   }
 
   if (type === "MANUAL_INCREASE") {
-    return "Adicao manual";
+    return "Adição manual";
   }
 
   if (type === "ORDER_DECREASE") {
     return "Baixa por venda";
   }
 
-  return "Reposicao por cancelamento";
+  return "Reposição por cancelamento";
 }
 
 function buildStockReportHref(filters: {
@@ -80,12 +80,12 @@ export default async function StockReportsPage({
       <section className="surface-card p-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="text-sm uppercase tracking-[0.25em] text-orange-500">Relatorios</p>
+            <p className="text-sm uppercase tracking-[0.25em] text-orange-500">Relatórios</p>
             <h1 className="mt-2 text-3xl font-semibold text-slate-950">
-              Relatorio de estoque
+              Relatório de estoque
             </h1>
             <p className="mt-3 text-sm leading-7 text-slate-600">
-              Veja entradas, remocoes manuais, baixas por venda e reposicoes por cancelamento.
+              Veja entradas, remoções manuais, baixas por venda e reposições por cancelamento.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -117,19 +117,19 @@ export default async function StockReportsPage({
         />
 
         <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <StatCard label="Baixas por venda" value={report.orderDecreaseUnits} hint={`${report.orderDecreaseCount} movimentacoes`} />
-          <StatCard label="Remocoes manuais" value={report.manualDecreaseUnits} hint={`${report.manualDecreaseCount} movimentacoes`} />
-          <StatCard label="Adicoes manuais" value={report.manualIncreaseUnits} hint={`${report.manualIncreaseCount} movimentacoes`} />
-          <StatCard label="Reposicoes por cancelamento" value={report.orderRestoreUnits} hint={`${report.orderRestoreCount} movimentacoes`} />
+          <StatCard label="Baixas por venda" value={report.orderDecreaseUnits} hint={`${report.orderDecreaseCount} movimentações`} />
+          <StatCard label="Remoções manuais" value={report.manualDecreaseUnits} hint={`${report.manualDecreaseCount} movimentações`} />
+          <StatCard label="Adições manuais" value={report.manualIncreaseUnits} hint={`${report.manualIncreaseCount} movimentações`} />
+          <StatCard label="Reposições por cancelamento" value={report.orderRestoreUnits} hint={`${report.orderRestoreCount} movimentações`} />
         </div>
       </section>
 
       <section className="surface-card p-6">
         <p className="text-sm uppercase tracking-[0.25em] text-orange-500">
-          Movimentacoes recentes
+          Movimentações recentes
         </p>
         <h2 className="mt-2 text-2xl font-semibold text-slate-950">
-          Historico detalhado do estoque
+          Histórico detalhado do estoque
         </h2>
         <div className="mt-6 grid gap-3">
           {report.movements.length ? (
@@ -156,7 +156,7 @@ export default async function StockReportsPage({
                   </span>
                 </div>
                 <p className="mt-3 text-sm text-slate-600">
-                  {movement.quantityBefore} {"->"} {movement.quantityAfter} ({movement.quantity} un.)
+                  {movement.quantityBefore} → {movement.quantityAfter} ({movement.quantity} un.)
                 </p>
                 {movement.notes ? (
                   <p className="mt-1 text-sm text-slate-500">{movement.notes}</p>
@@ -165,8 +165,8 @@ export default async function StockReportsPage({
             ))
           ) : (
             <EmptyStateCard
-              title="Sem movimentacoes neste filtro"
-              description="Ajuste as datas, categoria ou produto para localizar as movimentacoes do estoque."
+              title="Sem movimentações neste filtro"
+              description="Ajuste as datas, categoria ou produto para localizar as movimentações do estoque."
             />
           )}
         </div>

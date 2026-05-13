@@ -59,7 +59,7 @@ export async function applyStockMovement({
     });
 
     if (!variant) {
-      throw new Error("Variacao nao encontrada para este produto.");
+      throw new Error("Variação não encontrada para este produto.");
     }
 
     const quantityBefore = variant.stockQuantity;
@@ -124,15 +124,15 @@ export async function applyStockMovement({
   });
 
   if (!product) {
-    throw new Error("Produto nao encontrado para esta loja.");
+    throw new Error("Produto não encontrado para esta loja.");
   }
 
   if (!product.trackStock) {
-    throw new Error(`O produto ${product.name} nao usa controle de estoque.`);
+    throw new Error(`O produto ${product.name} não usa controle de estoque.`);
   }
 
   if (product._count.variants > 0) {
-    throw new Error(`O produto ${product.name} usa estoque por variacao. Escolha a combinacao.`);
+    throw new Error(`O produto ${product.name} usa estoque por variação. Escolha a combinação.`);
   }
 
   const quantityBefore = product.stockQuantity ?? 0;
@@ -280,7 +280,7 @@ export async function applyOrderStockDecreaseBatch({
     const variant = stockVariantMap.get(variantId);
 
     if (!variant) {
-      throw new Error("Uma variacao do pedido nao esta mais disponivel.");
+      throw new Error("Uma variação do pedido não está mais disponível.");
     }
 
     const updated = await tx.productVariant.updateMany({
@@ -322,7 +322,7 @@ export async function applyOrderStockDecreaseBatch({
       quantityBefore: quantityAfter + item.quantity,
       quantityAfter,
       notes:
-        notesByProductId?.get(item.productId) || `Baixa automatica da variacao ${variant.label}`,
+        notesByProductId?.get(item.productId) || `Baixa automática da variação ${variant.label}`,
     });
   }
 

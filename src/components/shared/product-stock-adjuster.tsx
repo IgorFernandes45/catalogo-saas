@@ -60,11 +60,11 @@ export function ProductStockAdjuster({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-sm font-semibold text-slate-900">
-            {label ? `Movimentar estoque da variacao` : "Movimentar estoque"}
+            {label ? `Movimentar estoque da variação` : "Movimentar estoque"}
           </p>
           <p className="text-sm text-slate-500">
             {label
-              ? `${label}. Informe a quantidade atual desta opcao.`
+              ? `${label}. Informe a quantidade atual desta opção.`
               : "Informe a quantidade atual deste produto."}
           </p>
         </div>
@@ -85,7 +85,7 @@ export function ProductStockAdjuster({
           type="text"
           value={notes}
           onChange={(event) => setNotes(event.target.value)}
-          placeholder="Motivo da movimentacao"
+          placeholder="Motivo da movimentação"
           className="rounded-2xl border border-slate-200 px-4 py-3 text-sm"
         />
         <button

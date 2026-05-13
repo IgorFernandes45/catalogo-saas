@@ -74,12 +74,12 @@ export default async function ProductsPage({
               Cadastro de produtos
             </p>
             <h1 className="mt-2 text-3xl font-semibold text-slate-950 sm:text-4xl">
-              Cadastre produto simples ou variacao vendavel
+              Cadastre produto simples ou com variações
             </h1>
             <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">
-              Primeiro escolha se esta criando um produto novo ou adicionando uma
-              nova variacao. Produtos com variacao usam o produto base como vitrine,
-              e cada variacao recebe preco, estoque, foto e codigo proprios.
+              Crie um produto novo ou adicione uma variação a um produto existente.
+              Produtos com variação usam o produto base como vitrine, e cada
+              variação recebe preço, estoque, foto e código próprios.
             </p>
           </div>
           <Link
@@ -119,7 +119,7 @@ export default async function ProductsPage({
         ) : (
           <div className="mt-8">
             <EmptyStateCard
-              title="Voce ainda nao tem categorias"
+              title="Você ainda não tem categorias"
               description="Crie ao menos uma categoria para liberar o cadastro manual de produtos."
               actionHref="/painel/categorias"
               actionLabel="Criar categoria"

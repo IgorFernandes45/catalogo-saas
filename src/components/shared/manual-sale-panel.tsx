@@ -3,18 +3,18 @@
 import { Building2, ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 
-import { ManualSaleForm } from "@/components/shared/manual-sale-form";
-
-type ManualSaleCategory = {
-  id: string;
-  name: string;
-};
+import {
+  ManualSaleForm,
+  type ManualSaleCategory,
+  type ManualSaleCustomer,
+} from "@/components/shared/manual-sale-form";
 
 type ManualSalePanelProps = {
   categories: ManualSaleCategory[];
+  customers: ManualSaleCustomer[];
 };
 
-export function ManualSalePanel({ categories }: ManualSalePanelProps) {
+export function ManualSalePanel({ categories, customers }: ManualSalePanelProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -25,10 +25,10 @@ export function ManualSalePanel({ categories }: ManualSalePanelProps) {
             Venda manual
           </p>
           <h2 className="mt-2 text-2xl font-semibold text-slate-950">
-            Registrar venda da loja fisica
+            Registrar venda da loja física
           </h2>
           <p className="mt-2 text-sm leading-7 text-slate-600">
-            Deixe fechado quando nao estiver usando. Isso ajuda a tela de pedidos a abrir mais leve com muitos produtos.
+            Mantenha fechado quando não estiver usando para preservar o desempenho desta tela.
           </p>
         </div>
 
@@ -45,7 +45,7 @@ export function ManualSalePanel({ categories }: ManualSalePanelProps) {
 
       {isOpen ? (
         <div className="mt-6">
-          <ManualSaleForm categories={categories} />
+          <ManualSaleForm categories={categories} customers={customers} />
         </div>
       ) : null}
     </section>

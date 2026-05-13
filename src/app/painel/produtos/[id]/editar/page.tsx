@@ -88,7 +88,7 @@ export default async function EditProductPage({
               Editar produto
             </h1>
             <p className="mt-3 text-sm leading-7 text-slate-600">
-              Ajuste cadastro, variacoes, imagens e configuracoes deste item.
+              Ajuste cadastro, variações, imagens e configurações deste item.
             </p>
           </div>
 
@@ -109,7 +109,7 @@ export default async function EditProductPage({
             catalogUsesImages={store?.catalogUsesImages ?? true}
             submitLabel="Salvar produto"
             successTitle="Produto atualizado"
-            errorTitle="Nao foi possivel atualizar o produto"
+            errorTitle="Não foi possível atualizar o produto"
             initialValues={{
               categoryId: product.categoryId,
               name: product.name,
@@ -174,12 +174,12 @@ export default async function EditProductPage({
       </section>
 
       <section className="surface-card p-6">
-        <p className="text-sm uppercase tracking-[0.25em] text-orange-500">Operacao</p>
+        <p className="text-sm uppercase tracking-[0.25em] text-orange-500">Operação</p>
         <h2 className="mt-2 text-2xl font-semibold text-slate-950">
-          Estoque e acoes rapidas
+          Estoque e ações rápidas
         </h2>
         <p className="mt-3 text-sm leading-7 text-slate-600">
-          Veja o resumo atual do item e aplique baixa ou reposicao sem voltar para a listagem.
+          Veja o resumo atual do item e aplique baixa ou reposição sem voltar para a listagem.
         </p>
 
         <div className="mt-6 rounded-[28px] border border-slate-200 bg-slate-50 p-5">
@@ -197,7 +197,7 @@ export default async function EditProductPage({
             {product.trackStock ? (
               <span className="rounded-full bg-slate-200 px-3 py-1 text-slate-700">
                 {product.variants.length
-                  ? `${product.variants.length} variacao(oes) com estoque`
+                  ? `${product.variants.length} variação(ões) com estoque`
                   : `Estoque atual: ${product.stockQuantity ?? 0}`}
               </span>
             ) : (
@@ -234,11 +234,11 @@ export default async function EditProductPage({
         <div className="mt-6">
           <MutationActionButton
             action={deleteProductAction.bind(null, product.id)}
-            confirmMessage={`Deseja excluir o produto ${product.name}? Se ele tiver historico de vendas ou estoque, o sistema vai apenas desativar para preservar os relatorios.`}
+            confirmMessage={`Deseja excluir o produto "${product.name}"? Se ele tiver histórico de vendas ou estoque, o sistema irá apenas desativá-lo para preservar os relatórios.`}
             idleLabel="Excluir produto"
             pendingLabel="Excluindo..."
             successTitle="Produto removido"
-            errorTitle="Nao foi possivel excluir o produto"
+            errorTitle="Não foi possível excluir o produto"
           />
         </div>
       </section>

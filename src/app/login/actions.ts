@@ -33,7 +33,7 @@ export async function loginAction(formData: FormData) {
   });
 
   if (!parsed.success) {
-    redirect(`/login?error=${encodeURIComponent(parsed.error.issues[0]?.message || "Dados invalidos.")}`);
+    redirect(`/login?error=${encodeURIComponent(parsed.error.issues[0]?.message || "Dados inválidos.")}`);
   }
 
   const user = await prisma.user.findUnique({

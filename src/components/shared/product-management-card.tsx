@@ -81,14 +81,14 @@ export function ProductManagementCard({
       </div>
 
       <p className="mt-3 text-sm text-slate-600">
-        {product.shortDescription || "Sem descricao curta"}
+        {product.shortDescription || "Sem descrição curta"}
       </p>
 
       <div className="mt-4 flex flex-wrap gap-2 text-xs font-semibold">
         {product.trackStock ? (
           <span className="rounded-full bg-slate-200 px-3 py-1">
             {product.variants.length
-              ? `Estoque por variacao (${product.variants.length})`
+              ? `Estoque por variação (${product.variants.length})`
               : `Estoque: ${product.stockQuantity ?? 0}`}
           </span>
         ) : null}
@@ -97,7 +97,7 @@ export function ProductManagementCard({
         ) : null}
         {product.barcode ? (
           <span className="rounded-full bg-slate-200 px-3 py-1">
-            Codigo: {product.barcode}
+            Código: {product.barcode}
           </span>
         ) : null}
         {product.costPrice !== null ? (
@@ -158,17 +158,17 @@ export function ProductManagementCard({
             className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
           >
             {showVariants ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
-            {showVariants ? "Ocultar variacoes" : `Ver variacoes (${product.variants.length})`}
+            {showVariants ? "Ocultar variações" : `Ver variações (${product.variants.length})`}
           </button>
         ) : null}
 
         <MutationActionButton
           action={deleteAction}
-          confirmMessage={`Deseja excluir o produto ${product.name}? Se ele tiver historico de vendas ou estoque, o sistema vai apenas desativar para preservar os relatorios.`}
+          confirmMessage={`Deseja excluir o produto "${product.name}"? Se ele tiver histórico de vendas ou estoque, o sistema irá apenas desativá-lo para preservar os relatórios.`}
           idleLabel="Excluir produto"
           pendingLabel="Excluindo..."
           successTitle="Produto removido"
-          errorTitle="Nao foi possivel excluir o produto"
+          errorTitle="Não foi possível excluir o produto"
         />
       </div>
 
@@ -194,7 +194,7 @@ export function ProductManagementCard({
           )
         ) : (
           <div className="mt-4 rounded-[24px] bg-white px-4 py-3 text-sm text-slate-500">
-            Abra a area de estoque para ajustar o numero atual ou consultar o historico.
+            Abra a área de estoque para ajustar o número atual ou consultar o histórico.
           </div>
         )
       ) : (
@@ -212,7 +212,7 @@ export function ProductManagementCard({
                 Estoque {variant.stockQuantity}
                 {variant.sku ? ` - SKU ${variant.sku}` : ""}
                 {variant.barcode ? ` - Cod. ${variant.barcode}` : ""}
-                {variant.imageUrl ? " - com foto propria" : ""}
+                {variant.imageUrl ? " - com foto própria" : ""}
                 {variant.priceOverride ? ` - ${formatCurrency(variant.priceOverride)}` : ""}
                 {variant.promotionalPriceOverride
                   ? ` - Promo ${formatCurrency(variant.promotionalPriceOverride)}`

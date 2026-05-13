@@ -52,14 +52,14 @@ export function ImageUploadField({
       };
 
       if (!response.ok || !payload.url) {
-        throw new Error(payload.error || "Nao foi possivel enviar a imagem.");
+        throw new Error(payload.error || "Não foi possível enviar a imagem.");
       }
 
       setValue(payload.url);
       notify({
         tone: "success",
         title: "Imagem enviada",
-        message: "Upload concluido no Cloudinary.",
+        message: "Upload concluído no Cloudinary.",
       });
     } catch (error) {
       notify({
@@ -68,7 +68,7 @@ export function ImageUploadField({
         message:
           error instanceof Error
             ? error.message
-            : "Nao foi possivel enviar a imagem agora.",
+            : "Não foi possível enviar a imagem agora.",
       });
     } finally {
       setIsUploading(false);
@@ -152,7 +152,7 @@ export function ImageUploadField({
         />
 
         <p className="text-xs leading-5 text-slate-500">
-          A imagem fica salva com seguranca e aparece no catalogo automaticamente.
+          A imagem fica salva com segurança e aparece no catálogo automaticamente.
         </p>
       </div>
 

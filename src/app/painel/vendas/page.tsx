@@ -9,13 +9,13 @@ function paymentLabel(value: string | null) {
   const labels: Record<string, string> = {
     CASH: "Dinheiro",
     PIX: "Pix",
-    DEBIT_CARD: "Cartao debito",
-    CREDIT_CARD: "Cartao credito",
-    BANK_TRANSFER: "Transferencia",
+    DEBIT_CARD: "Cartão débito",
+    CREDIT_CARD: "Cartão crédito",
+    BANK_TRANSFER: "Transferência",
     OTHER: "Outro",
   };
 
-  return value ? labels[value] || value : "Nao informado";
+  return value ? labels[value] || value : "Não informado";
 }
 
 export default async function SalesHistoryPage({
@@ -71,10 +71,10 @@ export default async function SalesHistoryPage({
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <p className="text-sm uppercase tracking-[0.25em] text-orange-500">
-            Historico
+            Histórico
           </p>
           <h1 className="mt-2 text-3xl font-semibold text-slate-950">
-            Historico de vendas
+            Histórico de vendas
           </h1>
           <p className="mt-3 text-sm leading-7 text-slate-600">
             Consulte vendas finalizadas e cancelamentos fora da fila de pedidos pendentes.
@@ -158,7 +158,7 @@ export default async function SalesHistoryPage({
         })}
         {!orders.length ? (
           <EmptyStateCard
-            title="Sem historico neste filtro"
+            title="Sem histórico neste filtro"
             description="Finalize pedidos ou registre vendas manuais para aparecerem aqui."
           />
         ) : null}

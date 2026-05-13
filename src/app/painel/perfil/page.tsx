@@ -20,7 +20,7 @@ export default async function StoreProfilePage() {
       <div>
         <p className="text-sm uppercase tracking-[0.25em] text-orange-500">Perfil</p>
         <h1 className="mt-2 text-3xl font-semibold text-slate-950">
-          Identidade da loja e aparencia do catalogo
+          Identidade da loja e aparência do catálogo
         </h1>
       </div>
       <StoreProfileForm store={store} />

@@ -17,9 +17,9 @@ function paymentLabel(value: string) {
   const labels: Record<string, string> = {
     CASH: "Dinheiro",
     PIX: "Pix",
-    DEBIT_CARD: "Cartao debito",
-    CREDIT_CARD: "Cartao credito",
-    BANK_TRANSFER: "Transferencia",
+    DEBIT_CARD: "Cartão débito",
+    CREDIT_CARD: "Cartão crédito",
+    BANK_TRANSFER: "Transferência",
     OTHER: "Outro",
   };
 
@@ -79,9 +79,9 @@ export default async function SalesReportsPage({
       <section className="surface-card p-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="text-sm uppercase tracking-[0.25em] text-orange-500">Relatorios</p>
+            <p className="text-sm uppercase tracking-[0.25em] text-orange-500">Relatórios</p>
             <h1 className="mt-2 text-3xl font-semibold text-slate-950">
-              Relatorio de vendas
+              Relatório de vendas
             </h1>
             <p className="mt-3 text-sm leading-7 text-slate-600">
               Veja somente faturamento, itens vendidos e desempenho por produto.
@@ -170,7 +170,7 @@ export default async function SalesReportsPage({
             ) : (
               <EmptyStateCard
                 title="Sem vendas neste filtro"
-                description="Ajuste as datas, categoria ou produto para localizar as vendas que voce quer analisar."
+                description="Ajuste as datas, categoria ou produto para localizar as vendas que você quer analisar."
               />
             )}
           </div>
@@ -178,7 +178,7 @@ export default async function SalesReportsPage({
 
         <div className="surface-card p-6">
           <p className="text-sm uppercase tracking-[0.25em] text-orange-500">
-            Evolucao das vendas
+            Evolução das vendas
           </p>
           <h2 className="mt-2 text-2xl font-semibold text-slate-950">
             Dias com faturamento
@@ -206,8 +206,8 @@ export default async function SalesReportsPage({
               ))
             ) : (
               <EmptyStateCard
-                title="Sem serie diaria"
-                description="Quando houver vendas no intervalo filtrado, esta area vai mostrar o faturamento dia a dia."
+                title="Sem série diária"
+                description="Quando houver vendas no intervalo filtrado, esta área exibirá o faturamento dia a dia."
               />
             )}
           </div>
@@ -216,7 +216,7 @@ export default async function SalesReportsPage({
 
       <section className="surface-card p-6">
         <p className="text-sm uppercase tracking-[0.25em] text-orange-500">
-          Variacoes mais vendidas
+          Variações mais vendidas
         </p>
         <h2 className="mt-2 text-2xl font-semibold text-slate-950">
           Ranking por cor, tamanho, sabor ou volume
@@ -247,8 +247,8 @@ export default async function SalesReportsPage({
             ))
           ) : (
             <EmptyStateCard
-              title="Sem vendas por variacao"
-              description="Quando vender produtos com variacoes, o ranking aparece aqui."
+              title="Sem vendas por variação"
+              description="Quando vender produtos com variações, o ranking aparece aqui."
             />
           )}
         </div>

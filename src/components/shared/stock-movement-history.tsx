@@ -23,14 +23,14 @@ function getMovementLabel(movement: StockMovementHistoryItem) {
   }
 
   if (movement.type === "MANUAL_INCREASE") {
-    return `Reposicao manual de ${movement.quantity}`;
+    return `Reposição manual de ${movement.quantity}`;
   }
 
   if (movement.type === "ORDER_DECREASE") {
     return `Baixa por pedido de ${movement.quantity}`;
   }
 
-  return `Reposicao por cancelamento de ${movement.quantity}`;
+  return `Reposição por cancelamento de ${movement.quantity}`;
 }
 
 function formatDateTime(value: string) {
@@ -67,13 +67,13 @@ export function StockMovementHistory({ productId }: StockMovementHistoryProps) {
       };
 
       if (!response.ok || !data.movements) {
-        setError(data.error || "Nao foi possivel carregar o historico.");
+        setError(data.error || "Não foi possível carregar o histórico.");
         return;
       }
 
       setMovements(data.movements);
     } catch {
-      setError("Nao foi possivel carregar o historico.");
+      setError("Não foi possível carregar o histórico.");
     } finally {
       setLoading(false);
     }
@@ -86,14 +86,14 @@ export function StockMovementHistory({ productId }: StockMovementHistoryProps) {
         onClick={toggleHistory}
         className="rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-300"
       >
-        {isOpen ? "Ocultar historico" : "Ver historico recente"}
+        {isOpen ? "Ocultar histórico" : "Ver histórico recente"}
       </button>
 
       {isOpen ? (
         <div className="mt-4 grid gap-2">
           {loading ? (
             <div className="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-500">
-              Carregando historico...
+              Carregando histórico...
             </div>
           ) : error ? (
             <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
@@ -124,7 +124,7 @@ export function StockMovementHistory({ productId }: StockMovementHistoryProps) {
             ))
           ) : (
             <div className="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-500">
-              Nenhuma movimentacao registrada ainda.
+              Nenhuma movimentação registrada ainda.
             </div>
           )}
         </div>

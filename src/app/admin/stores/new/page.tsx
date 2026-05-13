@@ -12,7 +12,7 @@ export default async function NewStorePage({
       <div>
         <p className="text-sm uppercase tracking-[0.25em] text-orange-500">Nova loja</p>
         <h1 className="mt-2 text-3xl font-semibold text-slate-950">
-          Criar nova operacao multiloja
+          Criar nova operação multiloja
         </h1>
       </div>
 
@@ -66,9 +66,9 @@ export default async function NewStorePage({
             />
           </label>
           <label className="grid cursor-pointer gap-2 rounded-[24px] border border-slate-200 bg-slate-50 p-5 text-slate-700">
-            <span className="text-sm font-semibold text-slate-950">Catalogo sem fotos</span>
+            <span className="text-sm font-semibold text-slate-950">Catálogo sem fotos</span>
             <span className="text-sm leading-6">
-              Mostra cards compactos apenas com textos, valores e botoes de contato.
+              Mostra cards compactos apenas com textos, valores e botões de contato.
             </span>
             <input
               type="radio"
@@ -85,11 +85,11 @@ export default async function NewStorePage({
             <input required name="name" className="rounded-2xl border border-slate-200 px-4 py-3" />
           </label>
           <label className="grid gap-2 text-sm font-medium text-slate-700">
-            Slug publico
+            Slug público
             <input name="slug" placeholder="minha-loja" className="rounded-2xl border border-slate-200 px-4 py-3" />
           </label>
           <label className="grid gap-2 text-sm font-medium text-slate-700 lg:col-span-2">
-            Descricao
+            Descrição
             <textarea name="description" rows={4} className="rounded-2xl border border-slate-200 px-4 py-3" />
           </label>
           <label className="grid gap-2 text-sm font-medium text-slate-700">
@@ -105,7 +105,7 @@ export default async function NewStorePage({
             <input name="phone" className="rounded-2xl border border-slate-200 px-4 py-3" />
           </label>
           <label className="grid gap-2 text-sm font-medium text-slate-700">
-            Endereco
+            Endereço
             <input name="address" className="rounded-2xl border border-slate-200 px-4 py-3" />
           </label>
           <input type="hidden" name="logoUrl" value="" />

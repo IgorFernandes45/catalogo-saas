@@ -117,9 +117,9 @@ export default async function EditStorePage({
                 : "border-slate-200 bg-slate-50 text-slate-700"
             }`}
           >
-            <span className="text-sm font-semibold">Catalogo sem fotos</span>
+            <span className="text-sm font-semibold">Catálogo sem fotos</span>
             <span className="text-sm leading-6 opacity-80">
-              Mostra cards compactos apenas com textos, valores e botoes de contato.
+              Mostra cards compactos apenas com textos, valores e botões de contato.
             </span>
             <input
               type="radio"
@@ -137,11 +137,11 @@ export default async function EditStorePage({
             <input required name="name" defaultValue={store.name} className="rounded-2xl border border-slate-200 px-4 py-3" />
           </label>
           <label className="grid gap-2 text-sm font-medium text-slate-700">
-            Slug publico
+            Slug público
             <input required name="slug" defaultValue={store.slug} className="rounded-2xl border border-slate-200 px-4 py-3" />
           </label>
           <label className="grid gap-2 text-sm font-medium text-slate-700 lg:col-span-2">
-            Descricao
+            Descrição
             <textarea name="description" rows={4} defaultValue={store.description || ""} className="rounded-2xl border border-slate-200 px-4 py-3" />
           </label>
           <label className="grid gap-2 text-sm font-medium text-slate-700">
@@ -157,7 +157,7 @@ export default async function EditStorePage({
             <input name="phone" defaultValue={store.phone || ""} className="rounded-2xl border border-slate-200 px-4 py-3" />
           </label>
           <label className="grid gap-2 text-sm font-medium text-slate-700">
-            Endereco
+            Endereço
             <input name="address" defaultValue={store.address || ""} className="rounded-2xl border border-slate-200 px-4 py-3" />
           </label>
           <input type="hidden" name="logoUrl" value={store.logoUrl || ""} />
@@ -188,7 +188,7 @@ export default async function EditStorePage({
 
         <div className="rounded-[28px] bg-slate-50 p-5 text-sm text-slate-600">
           <p className="font-semibold text-slate-900">Gestor principal</p>
-          <p className="mt-2">{store.users[0]?.name || "Nao cadastrado"}</p>
+          <p className="mt-2">{store.users[0]?.name || "Não cadastrado"}</p>
           <p>{store.users[0]?.email || "-"}</p>
         </div>
 
@@ -201,7 +201,7 @@ export default async function EditStorePage({
           type="submit"
           className="w-fit rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
         >
-          Salvar alteracoes
+          Salvar alterações
         </button>
       </form>
     </div>

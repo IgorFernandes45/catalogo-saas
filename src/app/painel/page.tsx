@@ -28,7 +28,7 @@ export default async function StoreDashboardPage() {
             />
           </>
         ) : (
-          <StatCard label="Modo" value="Catalogo" />
+          <StatCard label="Modo" value="Catálogo" />
         )}
       </section>
 
@@ -36,19 +36,19 @@ export default async function StoreDashboardPage() {
         <div className="surface-card p-6">
           <p className="text-sm uppercase tracking-[0.25em] text-orange-500">Atalhos</p>
           <h2 className="mt-2 text-2xl font-semibold text-slate-950">
-            Gestao rapida do catalogo
+            Gestão rápida do catálogo
           </h2>
           <div className="mt-6 grid gap-3">
             {[
               { href: "/painel/perfil", label: "Editar identidade visual e dados da loja" },
-              { href: "/painel/categorias", label: "Criar categorias e atributos dinamicos" },
+              { href: "/painel/categorias", label: "Criar categorias e atributos dinâmicos" },
               { href: "/painel/produtos", label: "Cadastrar produtos" },
               { href: "/painel/estoque", label: "Produtos cadastrados e estoque" },
               ...(salesEnabled
                 ? [
                     { href: "/painel/pedidos", label: "Organizar fila de pedidos e registrar venda manual" },
-                    { href: "/painel/relatorios", label: "Abrir relatorio de vendas" },
-                    { href: "/painel/relatorios/estoque", label: "Abrir relatorio de estoque" },
+                    { href: "/painel/relatorios", label: "Abrir relatório de vendas" },
+                    { href: "/painel/relatorios/estoque", label: "Abrir relatório de estoque" },
                   ]
                 : []),
               { href: `/loja/${user.store?.slug}`, label: "Abrir catálogo público da loja", target: "_blank" },
@@ -71,7 +71,7 @@ export default async function StoreDashboardPage() {
             Estoque baixo
           </p>
           <h2 className="mt-2 text-2xl font-semibold text-slate-950">
-            Produtos que merecem atencao
+            Produtos que merecem atenção
           </h2>
           <div className="mt-6 grid gap-3">
             {dashboard.lowStockProducts.length ? (
@@ -93,7 +93,7 @@ export default async function StoreDashboardPage() {
                     </div>
                     <span className="rounded-full bg-orange-100 px-3 py-1 text-xs font-semibold text-orange-700">
                       {product.variants.length
-                        ? `${product.variants.length} variacao(oes) baixa(s)`
+                        ? `${product.variants.length} variação(ões) baixa(s)`
                         : `${product.stockQuantity ?? 0} unidades`}
                     </span>
                   </div>
@@ -102,7 +102,7 @@ export default async function StoreDashboardPage() {
             ) : (
               <EmptyStateCard
                 title="Tudo em ordem no estoque"
-                description="Nenhum produto da sua loja esta com alerta de estoque baixo no momento."
+                description="Nenhum produto da sua loja está com alerta de estoque baixo no momento."
                 actionHref="/painel/estoque?trackStock=1"
                 actionLabel="Revisar estoque"
               />

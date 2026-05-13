@@ -34,8 +34,8 @@ export default async function StoreLayout({
       title={user.store?.name || "Painel da loja"}
       subtitle={
         salesEnabled
-          ? "Gerencie vitrine, estoque, fila de pedidos, vendas presenciais e os relatorios da loja."
-          : "Modo somente catalogo: gerencie perfil, categorias, produtos e a vitrine publica."
+          ? "Gerencie vitrine, estoque, fila de pedidos, vendas presenciais e os relatórios da loja."
+          : "Modo somente catálogo: gerencie perfil, categorias, produtos e a vitrine pública."
       }
       session={{
         userId: user.id,

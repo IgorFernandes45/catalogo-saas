@@ -18,10 +18,10 @@ export default async function LoginPage({
               Acesso seguro
             </p>
             <h1 className="mt-4 text-4xl font-semibold leading-tight lg:text-5xl">
-              Entre no painel e mantenha sua operacao organizada.
+              Entre no painel e mantenha sua operação organizada.
             </h1>
             <p className="mt-5 max-w-xl text-lg leading-8 text-slate-300">
-              Ambiente protegido para acompanhar produtos, clientes, pedidos e relatorios
+              Ambiente protegido para acompanhar produtos, clientes, pedidos e relatórios
               com tranquilidade.
             </p>
           </div>
@@ -30,7 +30,7 @@ export default async function LoginPage({
             {[
               {
                 icon: ShieldCheck,
-                title: "Gestao central",
+                title: "Gestão central",
                 text: "Controle lojas, acompanhe indicadores e mantenha tudo organizado.",
               },
               {

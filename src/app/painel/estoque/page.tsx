@@ -171,8 +171,8 @@ export default async function StockProductsPage({
             Produtos cadastrados
           </h1>
           <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">
-            Consulte produtos, edite cadastro, ajuste o numero atual de estoque e
-            veja as variacoes vendaveis de cada produto.
+            Consulte produtos, edite cadastro, ajuste o número atual de estoque e
+            veja as variações vendáveis de cada produto.
           </p>
         </div>
         <Link
@@ -252,7 +252,7 @@ export default async function StockProductsPage({
         <div className="mt-4">
           <EmptyStateCard
             title="Nenhum produto encontrado"
-            description="Ajuste a busca ou os filtros de estoque para localizar os produtos que voce precisa movimentar."
+            description="Ajuste a busca ou os filtros de estoque para localizar os produtos que você precisa movimentar."
             actionHref="/painel/estoque"
             actionLabel="Limpar filtros"
           />
@@ -261,7 +261,7 @@ export default async function StockProductsPage({
       {totalProducts > pageSize ? (
         <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-[24px] border border-slate-200 bg-white px-4 py-4">
           <p className="text-sm text-slate-500">
-            Pagina {currentPage} de {totalPages}
+            Página {currentPage} de {totalPages}
           </p>
           <div className="flex gap-3">
             <Link
@@ -284,7 +284,7 @@ export default async function StockProductsPage({
                   : "border border-slate-200 bg-white text-slate-700 hover:border-slate-300"
               }`}
             >
-              Proxima
+              Próxima
             </Link>
           </div>
         </div>

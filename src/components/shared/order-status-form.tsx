@@ -36,7 +36,7 @@ export function OrderStatusForm({
         title:
           result.status === "success"
             ? "Pedido atualizado"
-            : "Nao foi possivel atualizar o pedido",
+            : "Não foi possível atualizar o pedido",
         message: result.message,
       });
 
@@ -116,9 +116,9 @@ export function OrderStatusForm({
           >
             <option value="PIX">Pix</option>
             <option value="CASH">Dinheiro</option>
-            <option value="DEBIT_CARD">Cartao debito</option>
-            <option value="CREDIT_CARD">Cartao credito</option>
-            <option value="BANK_TRANSFER">Transferencia</option>
+            <option value="DEBIT_CARD">Cartão débito</option>
+            <option value="CREDIT_CARD">Cartão crédito</option>
+            <option value="BANK_TRANSFER">Transferência</option>
             <option value="OTHER">Outro</option>
           </select>
         ) : null}
@@ -149,7 +149,7 @@ export function OrderStatusForm({
                 onClick={handleDismiss}
                 className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-300"
               >
-                Nao, voltar
+                Não, voltar
               </button>
               <button
                 type="button"

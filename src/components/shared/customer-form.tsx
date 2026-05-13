@@ -73,13 +73,13 @@ export function CustomerForm() {
         </label>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
-        <label className="grid gap-2 text-sm font-medium text-slate-700 md:col-span-2">
+      <div className="grid gap-4 sm:grid-cols-2">
+        <label className="grid gap-2 text-sm font-medium text-slate-700 sm:col-span-2">
           Endereco
           <input name="address" className="rounded-2xl border border-slate-200 px-4 py-3" />
         </label>
         <label className="grid gap-2 text-sm font-medium text-slate-700">
-          Numero
+          Número
           <input name="number" className="rounded-2xl border border-slate-200 px-4 py-3" />
         </label>
         <label className="grid gap-2 text-sm font-medium text-slate-700">

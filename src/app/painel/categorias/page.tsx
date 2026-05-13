@@ -24,7 +24,7 @@ export default async function CategoriesPage() {
       <section className="surface-card p-6">
         <p className="text-sm uppercase tracking-[0.25em] text-orange-500">Categorias</p>
         <h1 className="mt-2 text-3xl font-semibold text-slate-950">
-          Crie categorias dinamicas
+          Crie categorias dinâmicas
         </h1>
         <CategoryAdminForm />
       </section>
@@ -32,7 +32,7 @@ export default async function CategoriesPage() {
       <section className="surface-card p-6">
         <p className="text-sm uppercase tracking-[0.25em] text-orange-500">Estrutura atual</p>
         <h2 className="mt-2 text-2xl font-semibold text-slate-950">
-          Categorias ja cadastradas
+          Categorias já cadastradas
         </h2>
         {categories.length > 1 ? (
           <CategoryReorderList

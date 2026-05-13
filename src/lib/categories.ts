@@ -105,7 +105,7 @@ export async function updateStoreCategory({
   });
 
   if (!category) {
-    throw new Error("Categoria nao encontrada para esta loja.");
+    throw new Error("Categoria não encontrada para esta loja.");
   }
 
   const nextNames = new Set(input.attributes.map((attribute) => attribute.name.trim().toLowerCase()));
@@ -209,7 +209,7 @@ export async function deleteStoreCategory({
   });
 
   if (!category) {
-    throw new Error("Categoria nao encontrada para esta loja.");
+    throw new Error("Categoria não encontrada para esta loja.");
   }
 
   if (category._count.products > 0) {
