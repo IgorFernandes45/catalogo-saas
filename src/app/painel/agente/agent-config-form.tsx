@@ -2,20 +2,13 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import {
-  createEvolutionInstanceAction,
-  registerWebhookAction,
-  saveAgentConfigAction,
-} from "./actions";
+import { connectWhatsAppAction, saveAgentConfigAction } from "./actions";
 
 type AgentConfig = {
   isEnabled: boolean;
   agentName: string;
   greetingMessage: string | null;
-  evolutionUrl: string | null;
-  evolutionApiKey: string | null;
   evolutionInstance: string | null;
-  phoneNumber: string | null;
   connectionStatus: string;
   deliveryFee: string | null;
   deliveryFeeNote: string | null;
@@ -35,32 +28,22 @@ const PAYMENT_OPTIONS = [
 ];
 
 function parsePayments(json: string | null): string[] {
-  try {
-    return JSON.parse(json || "[]") as string[];
-  } catch {
-    return [];
-  }
+  try { return JSON.parse(json || "[]") as string[]; }
+  catch { return []; }
 }
 
 type Tab = "conexao" | "entrega" | "pagamentos" | "treinamento";
 
-export function AgentConfigForm({
-  config,
-  storeId,
-}: {
-  config: AgentConfig;
-  storeId: string;
-}) {
+export function AgentConfigForm({ config }: { config: AgentConfig }) {
   const [activeTab, setActiveTab] = useState<Tab>("conexao");
-  const [connectionStatus, setConnectionStatus] = useState<string>(
-    config?.connectionStatus ?? "disconnected",
-  );
+  const [connectionStatus, setConnectionStatus] = useState(config?.connectionStatus ?? "disconnected");
   const [qrCode, setQrCode] = useState<string | null>(null);
   const [qrLoading, setQrLoading] = useState(false);
   const [statusLoading, setStatusLoading] = useState(false);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const selectedPayments = parsePayments(config?.acceptedPaymentsJson ?? null);
+  const isConfigured = !!config?.evolutionInstance;
 
   const fetchStatus = useCallback(async () => {
     setStatusLoading(true);
@@ -91,347 +74,237 @@ export function AgentConfigForm({
     }
   }, []);
 
-  // Poll connection status every 5s while a QR code is visible
   useEffect(() => {
     if (qrCode) {
       pollRef.current = setInterval(fetchStatus, 5000);
     }
-    return () => {
-      if (pollRef.current) clearInterval(pollRef.current);
-    };
+    return () => { if (pollRef.current) clearInterval(pollRef.current); };
   }, [qrCode, fetchStatus]);
 
-  const statusLabel = {
-    open: "Conectado ✓",
-    connecting: "Conectando…",
-    close: "Desconectado",
-    disconnected: "Desconectado",
-  }[connectionStatus] ?? connectionStatus;
-
-  const statusColor = connectionStatus === "open"
-    ? "text-green-600"
-    : connectionStatus === "connecting"
-      ? "text-yellow-600"
-      : "text-red-500";
+  const statusConfig = {
+    open:         { label: "Conectado",    color: "text-green-600",  dot: "bg-green-500" },
+    connecting:   { label: "Conectando…",  color: "text-yellow-600", dot: "bg-yellow-400" },
+    close:        { label: "Desconectado", color: "text-red-500",    dot: "bg-red-400" },
+    disconnected: { label: "Desconectado", color: "text-red-500",    dot: "bg-red-400" },
+  }[connectionStatus] ?? { label: connectionStatus, color: "text-slate-500", dot: "bg-slate-400" };
 
   const tabs: { key: Tab; label: string }[] = [
-    { key: "conexao", label: "Conexão WhatsApp" },
-    { key: "entrega", label: "Entrega" },
-    { key: "pagamentos", label: "Pagamentos" },
+    { key: "conexao",     label: "Conexão" },
+    { key: "entrega",     label: "Entrega" },
+    { key: "pagamentos",  label: "Pagamentos" },
     { key: "treinamento", label: "Treinamento" },
   ];
 
+  if (!config?.isEnabled) {
+    return (
+      <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-8 text-center">
+        <p className="text-2xl">🤖</p>
+        <p className="mt-3 font-semibold text-slate-800">Agente IA não habilitado</p>
+        <p className="mt-1 text-sm text-slate-500">
+          O agente de IA ainda não foi habilitado para esta loja.
+          Entre em contato com o administrador do sistema para ativar.
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <form action={saveAgentConfigAction} className="mt-6 space-y-6">
-      {/* Enable toggle */}
-      <div className="flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
-        <input
-          type="checkbox"
-          id="isEnabled"
-          name="isEnabled"
-          defaultChecked={config?.isEnabled ?? false}
-          className="h-4 w-4 accent-orange-500"
-        />
-        <label htmlFor="isEnabled" className="text-sm font-medium text-slate-700">
-          Agente ativo — responde clientes automaticamente no WhatsApp
-        </label>
-      </div>
-
-      {/* Agent name */}
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div>
-          <label className="label-field">Nome do agente</label>
-          <input
-            type="text"
-            name="agentName"
-            defaultValue={config?.agentName ?? "Assistente"}
-            placeholder="Ex.: Assistente, Lara, Robô da Loja"
-            className="input-field"
-          />
-          <p className="mt-1 text-xs text-slate-400">
-            Como o agente se apresenta ao cliente.
-          </p>
-        </div>
-        <div>
-          <label className="label-field">Mensagem de boas-vindas</label>
-          <input
-            type="text"
-            name="greetingMessage"
-            defaultValue={config?.greetingMessage ?? ""}
-            placeholder="Olá! Como posso ajudar você hoje?"
-            className="input-field"
-          />
-        </div>
-      </div>
-
+    <div className="mt-6">
       {/* Tabs */}
-      <div>
-        <div className="flex border-b border-slate-200">
-          {tabs.map((tab) => (
+      <div className="flex gap-1 rounded-2xl border border-slate-200 bg-slate-100 p-1">
+        {tabs.map((tab) => (
+          <button
+            key={tab.key}
+            type="button"
+            onClick={() => setActiveTab(tab.key)}
+            className={`flex-1 rounded-xl py-2 text-sm font-medium transition-all ${
+              activeTab === tab.key
+                ? "bg-white text-slate-900 shadow-sm"
+                : "text-slate-500 hover:text-slate-700"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* ── Tab: Conexão ──────────────────────────────────────────── */}
+      {activeTab === "conexao" && (
+        <div className="mt-5 space-y-4">
+          {/* Status card */}
+          <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-5 py-4">
+            <div className="flex items-center gap-3">
+              <span className={`h-2.5 w-2.5 rounded-full ${statusConfig.dot}`} />
+              <div>
+                <p className="text-xs text-slate-400">Status do WhatsApp</p>
+                <p className={`text-sm font-semibold ${statusConfig.color}`}>
+                  {statusLoading ? "Verificando…" : statusConfig.label}
+                </p>
+              </div>
+            </div>
             <button
-              key={tab.key}
               type="button"
-              onClick={() => setActiveTab(tab.key)}
-              className={`px-4 py-2 text-sm font-medium transition-colors ${
-                activeTab === tab.key
-                  ? "border-b-2 border-orange-500 text-orange-600"
-                  : "text-slate-500 hover:text-slate-700"
-              }`}
+              onClick={fetchStatus}
+              className="rounded-xl border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:bg-slate-50"
             >
-              {tab.label}
+              Atualizar
             </button>
-          ))}
-        </div>
+          </div>
 
-        {/* ── Tab: Conexão ─────────────────────────────────────────── */}
-        {activeTab === "conexao" && (
-          <div className="mt-4 space-y-4">
-            <div className="rounded-lg border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-800">
-              <p className="font-medium">Como funciona</p>
-              <ol className="mt-1 list-decimal space-y-1 pl-4 text-blue-700">
-                <li>Instale a Evolution API no seu servidor (Railway, Fly.io, VPS).</li>
-                <li>Preencha a URL, API Key e nome da instância abaixo.</li>
-                <li>Clique em &quot;Criar instância&quot; e depois em &quot;Ver QR Code&quot;.</li>
-                <li>Escaneie o QR Code com o WhatsApp da loja.</li>
-                <li>Registre o webhook para o agente começar a responder.</li>
-              </ol>
-            </div>
+          {connectionStatus !== "open" && (
+            <>
+              <div className="rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-700">
+                <p className="font-medium">Como conectar</p>
+                <ol className="mt-1 list-decimal space-y-1 pl-4 text-blue-600">
+                  <li>Clique em <strong>Conectar WhatsApp</strong> abaixo.</li>
+                  <li>Clique em <strong>Ver QR Code</strong>.</li>
+                  <li>Abra o WhatsApp no celular → Dispositivos conectados → Conectar dispositivo.</li>
+                  <li>Escaneie o QR Code com a câmera.</li>
+                </ol>
+              </div>
 
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <label className="label-field">URL da Evolution API</label>
-                <input
-                  type="url"
-                  name="evolutionUrl"
-                  defaultValue={config?.evolutionUrl ?? ""}
-                  placeholder="https://evolution.seuservidor.com"
-                  className="input-field"
-                />
-              </div>
-              <div>
-                <label className="label-field">API Key global</label>
-                <input
-                  type="text"
-                  name="evolutionApiKey"
-                  defaultValue={config?.evolutionApiKey ?? ""}
-                  placeholder="Chave de acesso da Evolution API"
-                  className="input-field"
-                />
-              </div>
-              <div>
-                <label className="label-field">Nome da instância</label>
-                <input
-                  type="text"
-                  name="evolutionInstance"
-                  defaultValue={config?.evolutionInstance ?? ""}
-                  placeholder="Ex.: loja-roupas, minha-loja"
-                  className="input-field"
-                />
-                <p className="mt-1 text-xs text-slate-400">
-                  Identificador único da instância no Evolution API.
-                </p>
-              </div>
-              <div>
-                <label className="label-field">Número do WhatsApp</label>
-                <input
-                  type="text"
-                  name="phoneNumber"
-                  defaultValue={config?.phoneNumber ?? ""}
-                  placeholder="5511999999999"
-                  className="input-field"
-                />
-                <p className="mt-1 text-xs text-slate-400">
-                  Número com DDI+DDD, sem espaços ou símbolos.
-                </p>
-              </div>
-            </div>
-
-            {/* Connection status + actions */}
-            <div className="flex flex-wrap items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3">
-              <div className="flex-1">
-                <p className="text-xs text-slate-500">Status da conexão</p>
-                <p className={`text-sm font-semibold ${statusColor}`}>
-                  {statusLoading ? "Verificando…" : statusLabel}
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={fetchStatus}
-                className="btn-secondary text-xs"
-              >
-                Verificar status
-              </button>
-              <button
-                type="button"
-                onClick={fetchQrCode}
-                disabled={qrLoading}
-                className="btn-secondary text-xs"
-              >
-                {qrLoading ? "Carregando…" : "Ver QR Code"}
-              </button>
-            </div>
-
-            {qrCode && (
-              <div className="flex flex-col items-center gap-2 rounded-lg border border-slate-200 bg-white p-4">
-                <p className="text-sm font-medium text-slate-700">
-                  Escaneie com o WhatsApp da loja
-                </p>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={qrCode} alt="QR Code WhatsApp" className="h-56 w-56" />
-                <p className="text-xs text-slate-400">
-                  O QR Code expira em alguns minutos. Verificando conexão automaticamente…
-                </p>
-              </div>
-            )}
-
-            {/* Create instance & webhook buttons */}
-            <div className="flex flex-wrap gap-2 border-t border-slate-100 pt-4">
-              <form action={createEvolutionInstanceAction}>
-                <button type="submit" className="btn-secondary text-xs">
-                  Criar instância no Evolution
+              <div className="flex gap-2">
+                {isConfigured && (
+                  <form action={connectWhatsAppAction} className="flex-1">
+                    <button type="submit" className="w-full rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-700">
+                      Conectar WhatsApp
+                    </button>
+                  </form>
+                )}
+                <button
+                  type="button"
+                  onClick={fetchQrCode}
+                  disabled={qrLoading || !isConfigured}
+                  className="flex-1 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-40"
+                >
+                  {qrLoading ? "Carregando…" : "Ver QR Code"}
                 </button>
-              </form>
-              <form action={registerWebhookAction}>
-                <input type="hidden" name="appUrl" value={getAppUrl()} />
-                <button type="submit" className="btn-secondary text-xs">
-                  Registrar webhook automaticamente
-                </button>
-              </form>
-            </div>
-
-            <div className="rounded-lg border border-slate-100 bg-slate-50 p-3 text-xs text-slate-500">
-              <p className="font-medium text-slate-700">URL do webhook (para registrar manualmente)</p>
-              <code className="mt-1 block break-all text-slate-600">
-                {getAppUrl()}/api/agent/webhook?storeId={storeId}
-              </code>
-            </div>
-          </div>
-        )}
-
-        {/* ── Tab: Entrega ──────────────────────────────────────────── */}
-        {activeTab === "entrega" && (
-          <div className="mt-4 space-y-4">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <label className="label-field">Taxa de entrega</label>
-                <input
-                  type="text"
-                  name="deliveryFee"
-                  defaultValue={config?.deliveryFee ?? ""}
-                  placeholder="Ex.: R$ 5,00 | Grátis acima de R$ 80"
-                  className="input-field"
-                />
               </div>
-              <div>
-                <label className="label-field">Prazo de entrega</label>
-                <input
-                  type="text"
-                  name="deliveryTime"
-                  defaultValue={config?.deliveryTime ?? ""}
-                  placeholder="Ex.: 30 a 60 minutos"
-                  className="input-field"
-                />
-              </div>
-              <div>
-                <label className="label-field">Área de entrega</label>
-                <input
-                  type="text"
-                  name="deliveryArea"
-                  defaultValue={config?.deliveryArea ?? ""}
-                  placeholder="Ex.: Centro, Bairro X, até 10km"
-                  className="input-field"
-                />
-              </div>
-              <div>
-                <label className="label-field">Observação sobre entrega</label>
-                <input
-                  type="text"
-                  name="deliveryFeeNote"
-                  defaultValue={config?.deliveryFeeNote ?? ""}
-                  placeholder="Ex.: Retirada no local também disponível"
-                  className="input-field"
-                />
-              </div>
-            </div>
-          </div>
-        )}
+            </>
+          )}
 
-        {/* ── Tab: Pagamentos ───────────────────────────────────────── */}
-        {activeTab === "pagamentos" && (
-          <div className="mt-4 space-y-4">
-            <p className="text-sm text-slate-600">
-              Selecione as formas de pagamento aceitas. O agente informará estas opções ao cliente.
-            </p>
-            <div className="space-y-2">
-              {PAYMENT_OPTIONS.map((opt) => (
-                <label key={opt} className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    name={`payment_${opt}`}
-                    defaultChecked={selectedPayments.includes(opt)}
-                    className="h-4 w-4 accent-orange-500"
-                  />
-                  <span className="text-sm text-slate-700">{opt}</span>
-                </label>
-              ))}
-            </div>
-            <div>
-              <label className="label-field">Outra forma de pagamento</label>
-              <input
-                type="text"
-                name="paymentCustom"
-                defaultValue={
-                  selectedPayments.find((p) => !PAYMENT_OPTIONS.includes(p)) ?? ""
-                }
-                placeholder="Ex.: Boleto, Vale, Cheque"
-                className="input-field"
-              />
-            </div>
-          </div>
-        )}
-
-        {/* ── Tab: Treinamento ─────────────────────────────────────── */}
-        {activeTab === "treinamento" && (
-          <div className="mt-4 space-y-4">
-            <div>
-              <label className="label-field">Horário de funcionamento</label>
-              <input
-                type="text"
-                name="openingHours"
-                defaultValue={config?.openingHours ?? ""}
-                placeholder="Ex.: Seg a Sex das 9h às 18h, Sáb das 9h às 13h"
-                className="input-field"
-              />
-            </div>
-            <div>
-              <label className="label-field">Instruções personalizadas</label>
-              <textarea
-                name="customInstructions"
-                rows={10}
-                defaultValue={config?.customInstructions ?? ""}
-                placeholder={`Escreva como o agente deve se comportar. Exemplos:\n\n- Sempre ofereça entrega grátis para pedidos acima de R$ 100.\n- Se o cliente pedir desconto, conceda até 5%.\n- Nossos produtos têm garantia de 30 dias.\n- Informe que parcelamos em até 3x sem juros no cartão.\n- Para pedidos acima de R$ 200, ligue para confirmar.`}
-                className="input-field resize-none font-mono text-sm"
-              />
-              <p className="mt-1 text-xs text-slate-400">
-                Escreva livremente como se estivesse treinando um atendente.
-                O agente seguirá estas instruções ao conversar com os clientes.
+          {connectionStatus === "open" && (
+            <div className="rounded-2xl border border-green-200 bg-green-50 px-4 py-4 text-sm text-green-800">
+              <p className="font-semibold">✓ WhatsApp conectado!</p>
+              <p className="mt-1 text-green-700">
+                O agente está ativo e respondendo mensagens automaticamente.
+                A sessão se mantém enquanto o celular tiver conexão com a internet.
               </p>
             </div>
+          )}
+
+          {qrCode && (
+            <div className="flex flex-col items-center gap-3 rounded-2xl border border-slate-200 bg-white p-6">
+              <p className="text-sm font-medium text-slate-700">Escaneie com o WhatsApp do celular</p>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={qrCode} alt="QR Code WhatsApp" className="h-60 w-60 rounded-xl" />
+              <p className="text-xs text-slate-400">
+                Verificando conexão automaticamente a cada 5 segundos…
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── Tabs com form ─────────────────────────────────────────── */}
+      {activeTab !== "conexao" && (
+        <form action={saveAgentConfigAction} className="mt-5 space-y-5">
+          {/* Entrega */}
+          {activeTab === "entrega" && (
+            <div className="space-y-4">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="label-field">Taxa de entrega</label>
+                  <input type="text" name="deliveryFee" defaultValue={config?.deliveryFee ?? ""} placeholder="Ex.: R$ 5,00 | Grátis acima de R$ 80" className="input-field" />
+                </div>
+                <div>
+                  <label className="label-field">Prazo de entrega</label>
+                  <input type="text" name="deliveryTime" defaultValue={config?.deliveryTime ?? ""} placeholder="Ex.: 30 a 60 minutos" className="input-field" />
+                </div>
+                <div>
+                  <label className="label-field">Área de entrega</label>
+                  <input type="text" name="deliveryArea" defaultValue={config?.deliveryArea ?? ""} placeholder="Ex.: Centro, Bairro X, até 10km" className="input-field" />
+                </div>
+                <div>
+                  <label className="label-field">Observação sobre entrega</label>
+                  <input type="text" name="deliveryFeeNote" defaultValue={config?.deliveryFeeNote ?? ""} placeholder="Ex.: Retirada no local disponível" className="input-field" />
+                </div>
+              </div>
+              {/* hidden fields para não perder outros valores */}
+              <input type="hidden" name="agentName" value={config?.agentName ?? "Assistente"} />
+              <input type="hidden" name="greetingMessage" value={config?.greetingMessage ?? ""} />
+              <input type="hidden" name="openingHours" value={config?.openingHours ?? ""} />
+              <input type="hidden" name="customInstructions" value={config?.customInstructions ?? ""} />
+            </div>
+          )}
+
+          {/* Pagamentos */}
+          {activeTab === "pagamentos" && (
+            <div className="space-y-4">
+              <p className="text-sm text-slate-600">Selecione as formas de pagamento aceitas.</p>
+              <div className="space-y-3">
+                {PAYMENT_OPTIONS.map((opt) => (
+                  <label key={opt} className="flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 cursor-pointer hover:bg-slate-100 transition">
+                    <input type="checkbox" name={`payment_${opt}`} defaultChecked={selectedPayments.includes(opt)} className="h-4 w-4 accent-orange-500" />
+                    <span className="text-sm font-medium text-slate-700">{opt}</span>
+                  </label>
+                ))}
+              </div>
+              <div>
+                <label className="label-field">Outro método de pagamento</label>
+                <input type="text" name="paymentCustom" defaultValue={selectedPayments.find((p) => !PAYMENT_OPTIONS.includes(p)) ?? ""} placeholder="Ex.: Boleto, Vale" className="input-field" />
+              </div>
+              <input type="hidden" name="agentName" value={config?.agentName ?? "Assistente"} />
+              <input type="hidden" name="greetingMessage" value={config?.greetingMessage ?? ""} />
+              <input type="hidden" name="deliveryFee" value={config?.deliveryFee ?? ""} />
+              <input type="hidden" name="deliveryTime" value={config?.deliveryTime ?? ""} />
+              <input type="hidden" name="deliveryArea" value={config?.deliveryArea ?? ""} />
+              <input type="hidden" name="deliveryFeeNote" value={config?.deliveryFeeNote ?? ""} />
+              <input type="hidden" name="openingHours" value={config?.openingHours ?? ""} />
+              <input type="hidden" name="customInstructions" value={config?.customInstructions ?? ""} />
+            </div>
+          )}
+
+          {/* Treinamento */}
+          {activeTab === "treinamento" && (
+            <div className="space-y-4">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="label-field">Nome do agente</label>
+                  <input type="text" name="agentName" defaultValue={config?.agentName ?? "Assistente"} placeholder="Ex.: Assistente, Lara, Robô da Loja" className="input-field" />
+                </div>
+                <div>
+                  <label className="label-field">Mensagem de boas-vindas</label>
+                  <input type="text" name="greetingMessage" defaultValue={config?.greetingMessage ?? ""} placeholder="Olá! Como posso ajudar?" className="input-field" />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="label-field">Horário de funcionamento</label>
+                  <input type="text" name="openingHours" defaultValue={config?.openingHours ?? ""} placeholder="Ex.: Seg a Sex das 9h às 18h" className="input-field" />
+                </div>
+              </div>
+              <div>
+                <label className="label-field">Instruções para o agente</label>
+                <textarea
+                  name="customInstructions"
+                  rows={10}
+                  defaultValue={config?.customInstructions ?? ""}
+                  placeholder={`Escreva como se estivesse treinando um atendente. Exemplos:\n\n- Sempre ofereça frete grátis para pedidos acima de R$ 100.\n- Se o cliente pedir desconto, conceda até 5%.\n- Nossos produtos têm garantia de 30 dias.\n- Parcelamos em até 3x sem juros no cartão.`}
+                  className="input-field resize-none font-mono text-sm"
+                />
+                <p className="mt-1 text-xs text-slate-400">O agente seguirá estas instruções ao conversar com clientes.</p>
+              </div>
+              <input type="hidden" name="deliveryFee" value={config?.deliveryFee ?? ""} />
+              <input type="hidden" name="deliveryTime" value={config?.deliveryTime ?? ""} />
+              <input type="hidden" name="deliveryArea" value={config?.deliveryArea ?? ""} />
+              <input type="hidden" name="deliveryFeeNote" value={config?.deliveryFeeNote ?? ""} />
+            </div>
+          )}
+
+          <div className="flex justify-end border-t border-slate-100 pt-4">
+            <button type="submit" className="btn-primary">Salvar</button>
           </div>
-        )}
-      </div>
-
-      {/* Save button */}
-      <div className="flex justify-end border-t border-slate-100 pt-4">
-        <button type="submit" className="btn-primary">
-          Salvar configurações
-        </button>
-      </div>
-    </form>
+        </form>
+      )}
+    </div>
   );
-}
-
-function getAppUrl(): string {
-  if (typeof window === "undefined") return "";
-  return window.location.origin;
 }

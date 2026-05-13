@@ -104,12 +104,9 @@ export class EvolutionClient {
   }
 }
 
-export function buildEvolutionClient(config: {
-  evolutionUrl: string | null | undefined;
-  evolutionApiKey: string | null | undefined;
-  evolutionInstance: string | null | undefined;
-}): EvolutionClient | null {
-  const { evolutionUrl, evolutionApiKey, evolutionInstance } = config;
-  if (!evolutionUrl || !evolutionApiKey || !evolutionInstance) return null;
-  return new EvolutionClient(evolutionUrl, evolutionApiKey, evolutionInstance);
+export function buildEvolutionClient(instance: string | null | undefined): EvolutionClient | null {
+  const url = process.env.EVOLUTION_API_URL;
+  const key = process.env.EVOLUTION_API_KEY;
+  if (!url || !key || !instance) return null;
+  return new EvolutionClient(url, key, instance);
 }

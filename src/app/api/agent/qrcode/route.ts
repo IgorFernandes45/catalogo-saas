@@ -12,20 +12,12 @@ export async function GET() {
 
   const config = await prisma.agentConfig.findUnique({
     where: { storeId: user.storeId },
-    select: {
-      evolutionUrl: true,
-      evolutionApiKey: true,
-      evolutionInstance: true,
-    },
+    select: { evolutionInstance: true },
   });
 
-  const evolution = buildEvolutionClient({
-    evolutionUrl: config?.evolutionUrl ?? null,
-    evolutionApiKey: config?.evolutionApiKey ?? null,
-    evolutionInstance: config?.evolutionInstance ?? null,
-  });
+  const evolution = buildEvolutionClient(config?.evolutionInstance);
   if (!evolution) {
-    return NextResponse.json({ error: "Evolution API não configurada." }, { status: 400 });
+    return NextResponse.json({ error: "Agente não configurado para esta loja." }, { status: 400 });
   }
 
   const qr = await evolution.getQrCode();

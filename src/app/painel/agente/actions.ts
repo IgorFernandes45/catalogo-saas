@@ -10,16 +10,9 @@ export async function saveAgentConfigAction(formData: FormData) {
   const user = await requireStoreUser();
   if (!user.storeId) redirect("/painel");
 
-  const storeId = user.storeId;
-
   const data = {
-    isEnabled: formData.get("isEnabled") === "on",
     agentName: String(formData.get("agentName") ?? "Assistente").trim() || "Assistente",
     greetingMessage: String(formData.get("greetingMessage") ?? "").trim() || null,
-    evolutionUrl: String(formData.get("evolutionUrl") ?? "").trim() || null,
-    evolutionApiKey: String(formData.get("evolutionApiKey") ?? "").trim() || null,
-    evolutionInstance: String(formData.get("evolutionInstance") ?? "").trim() || null,
-    phoneNumber: String(formData.get("phoneNumber") ?? "").trim() || null,
     deliveryFee: String(formData.get("deliveryFee") ?? "").trim() || null,
     deliveryFeeNote: String(formData.get("deliveryFeeNote") ?? "").trim() || null,
     deliveryTime: String(formData.get("deliveryTime") ?? "").trim() || null,
@@ -29,39 +22,35 @@ export async function saveAgentConfigAction(formData: FormData) {
     customInstructions: String(formData.get("customInstructions") ?? "").trim() || null,
   };
 
-  await prisma.agentConfig.upsert({
-    where: { storeId },
-    create: { storeId, ...data },
-    update: data,
+  await prisma.agentConfig.update({
+    where: { storeId: user.storeId },
+    data,
   });
 
   redirect("/painel/agente?success=Configurações+salvas+com+sucesso.");
 }
 
-export async function registerWebhookAction(formData: FormData) {
+export async function registerWebhookAction() {
   const user = await requireStoreUser();
   if (!user.storeId) redirect("/painel");
 
   const config = await prisma.agentConfig.findUnique({
     where: { storeId: user.storeId },
-    select: {
-      evolutionUrl: true,
-      evolutionApiKey: true,
-      evolutionInstance: true,
-    },
+    select: { evolutionInstance: true },
   });
 
-  const evolution = buildEvolutionClient({
-    evolutionUrl: config?.evolutionUrl ?? null,
-    evolutionApiKey: config?.evolutionApiKey ?? null,
-    evolutionInstance: config?.evolutionInstance ?? null,
-  });
+  const evolution = buildEvolutionClient(config?.evolutionInstance);
   if (!evolution) {
-    redirect("/painel/agente?error=Configure+a+Evolution+API+antes.");
+    redirect("/painel/agente?error=Agente+não+configurado.+Contate+o+administrador.");
   }
 
-  const appUrl = String(formData.get("appUrl") ?? "").trim();
-  if (!appUrl) redirect("/painel/agente?error=URL+do+app+não+informada.");
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : "";
+
+  if (!appUrl) {
+    redirect("/painel/agente?error=URL+do+sistema+não+configurada.");
+  }
 
   const webhookUrl = `${appUrl}/api/agent/webhook?storeId=${user.storeId}`;
 
@@ -73,34 +62,27 @@ export async function registerWebhookAction(formData: FormData) {
   }
 }
 
-export async function createEvolutionInstanceAction() {
+export async function connectWhatsAppAction() {
   const user = await requireStoreUser();
   if (!user.storeId) redirect("/painel");
 
   const config = await prisma.agentConfig.findUnique({
     where: { storeId: user.storeId },
-    select: {
-      evolutionUrl: true,
-      evolutionApiKey: true,
-      evolutionInstance: true,
-    },
+    select: { evolutionInstance: true },
   });
 
-  const evolution = buildEvolutionClient({
-    evolutionUrl: config?.evolutionUrl ?? null,
-    evolutionApiKey: config?.evolutionApiKey ?? null,
-    evolutionInstance: config?.evolutionInstance ?? null,
-  });
+  const evolution = buildEvolutionClient(config?.evolutionInstance);
   if (!evolution) {
-    redirect("/painel/agente?error=Configure+a+Evolution+API+antes.");
+    redirect("/painel/agente?error=Agente+não+configurado.+Contate+o+administrador.");
   }
 
   try {
     await evolution.createInstance();
-    redirect("/painel/agente?success=Instância+criada.+Escaneie+o+QR+Code+para+conectar.");
   } catch {
-    redirect("/painel/agente?error=Não+foi+possível+criar+a+instância.");
+    // Instance may already exist — ignore error
   }
+
+  redirect("/painel/agente?tab=conexao");
 }
 
 function buildPaymentsJson(formData: FormData): string {

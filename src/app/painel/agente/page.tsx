@@ -41,7 +41,7 @@ export default async function AgentPage({
         </div>
       )}
 
-      <AgentConfigForm config={config} storeId={user.storeId!} />
+      <AgentConfigForm config={config} />
     </div>
   );
 }

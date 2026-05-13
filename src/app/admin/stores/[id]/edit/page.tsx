@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 
-import { updateStoreAction } from "@/app/admin/actions";
+import { saveStoreAgentAction, updateStoreAction } from "@/app/admin/actions";
 import { prisma } from "@/lib/prisma";
 
 export default async function EditStorePage({
@@ -13,15 +13,13 @@ export default async function EditStorePage({
   const { id } = await params;
   const query = await searchParams;
 
-  const store = await prisma.store.findUnique({
-    where: { id },
-    include: {
-      users: {
-        where: { role: "STORE_ADMIN" },
-        take: 1,
-      },
-    },
-  });
+  const [store, agentConfig] = await Promise.all([
+    prisma.store.findUnique({
+      where: { id },
+      include: { users: { where: { role: "STORE_ADMIN" }, take: 1 } },
+    }),
+    prisma.agentConfig.findUnique({ where: { storeId: id } }),
+  ]);
 
   if (!store) {
     notFound();
@@ -204,6 +202,76 @@ export default async function EditStorePage({
           Salvar alterações
         </button>
       </form>
+
+      {/* Agente IA */}
+      <div className="mt-10 border-t border-slate-100 pt-8">
+        <p className="text-sm uppercase tracking-[0.25em] text-orange-500">Agente IA</p>
+        <h2 className="mt-2 text-xl font-semibold text-slate-950">WhatsApp com inteligência artificial</h2>
+        <p className="mt-1 text-sm text-slate-500">
+          Habilite o agente para esta loja e defina a instância no Evolution API.
+          O cliente da loja só precisa escanear o QR code.
+        </p>
+
+        <form action={saveStoreAgentAction} className="mt-6 grid gap-5">
+          <input type="hidden" name="storeId" value={store.id} />
+
+          <label className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              name="agentEnabled"
+              defaultChecked={agentConfig?.isEnabled ?? false}
+              className="h-4 w-4 accent-orange-500"
+            />
+            <span className="text-sm font-medium text-slate-700">Habilitar Agente IA para esta loja</span>
+          </label>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="grid gap-2 text-sm font-medium text-slate-700">
+              Nome da instância (Evolution API)
+              <input
+                name="evolutionInstance"
+                defaultValue={agentConfig?.evolutionInstance ?? ""}
+                placeholder={`Ex.: ${store.slug}`}
+                className="rounded-2xl border border-slate-200 px-4 py-3 text-sm"
+              />
+              <span className="text-xs text-slate-400">
+                Identificador único no Evolution API. Use o slug da loja ou algo único.
+              </span>
+            </label>
+            <label className="grid gap-2 text-sm font-medium text-slate-700">
+              Número do WhatsApp do agente
+              <input
+                name="phoneNumber"
+                defaultValue={agentConfig?.phoneNumber ?? ""}
+                placeholder="5511999999999"
+                className="rounded-2xl border border-slate-200 px-4 py-3 text-sm"
+              />
+              <span className="text-xs text-slate-400">
+                Com DDI+DDD, sem espaços ou símbolos.
+              </span>
+            </label>
+          </div>
+
+          {agentConfig?.isEnabled && agentConfig?.evolutionInstance && (
+            <div className="rounded-2xl border border-slate-100 bg-slate-50 p-4 text-xs text-slate-500">
+              <p className="font-medium text-slate-700">URL do webhook desta loja</p>
+              <code className="mt-1 block break-all">
+                {process.env.VERCEL_URL
+                  ? `https://${process.env.VERCEL_URL}`
+                  : "https://catalogo-saas-wine.vercel.app"}
+                /api/agent/webhook?storeId={store.id}
+              </code>
+            </div>
+          )}
+
+          <button
+            type="submit"
+            className="w-fit rounded-full bg-orange-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-orange-600"
+          >
+            Salvar configuração do agente
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

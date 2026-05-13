@@ -22,12 +22,7 @@ async function buildStoreContext(storeId: string): Promise<string> {
   const [store, config, categories] = await Promise.all([
     prisma.store.findUnique({
       where: { id: storeId },
-      select: {
-        name: true,
-        description: true,
-        whatsappNumber: true,
-        address: true,
-      },
+      select: { name: true, description: true, whatsappNumber: true, address: true },
     }),
     prisma.agentConfig.findUnique({
       where: { storeId },

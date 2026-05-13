@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
 
 import { requireSuperAdmin } from "@/lib/auth";
+import { buildEvolutionClient } from "@/lib/evolution";
 import { prisma } from "@/lib/prisma";
 import { storeSchema } from "@/lib/validations";
 import { normalizeWhatsapp, parseCheckbox, slugify } from "@/lib/utils";
@@ -130,4 +131,33 @@ export async function updateStoreAction(formData: FormData) {
   });
 
   redirect(`/admin/stores/${storeId}/edit?success=Loja%20atualizada%20com%20sucesso.`);
+}
+
+export async function saveStoreAgentAction(formData: FormData) {
+  await requireSuperAdmin();
+  const storeId = String(formData.get("storeId") ?? "");
+  if (!storeId) redirect("/admin/stores");
+
+  const isEnabled = formData.get("agentEnabled") === "on";
+  const evolutionInstance = String(formData.get("evolutionInstance") ?? "").trim() || null;
+  const phoneNumber = String(formData.get("phoneNumber") ?? "").trim() || null;
+
+  await prisma.agentConfig.upsert({
+    where: { storeId },
+    create: { storeId, isEnabled, evolutionInstance, phoneNumber },
+    update: { isEnabled, evolutionInstance, phoneNumber },
+  });
+
+  if (isEnabled && evolutionInstance) {
+    const evolution = buildEvolutionClient(evolutionInstance);
+    if (evolution) {
+      try {
+        await evolution.createInstance();
+      } catch {
+        // Instance may already exist
+      }
+    }
+  }
+
+  redirect(`/admin/stores/${storeId}/edit?success=Agente+IA+configurado+com+sucesso.`);
 }
