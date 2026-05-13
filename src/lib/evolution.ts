@@ -86,6 +86,11 @@ export class EvolutionClient {
     });
   }
 
+  async deleteInstance(): Promise<void> {
+    const url = `${this.baseUrl}/instance/delete/${this.instance}`;
+    await fetch(url, { method: "DELETE", headers: this.headers() });
+  }
+
   async setWebhook(webhookUrl: string): Promise<void> {
     const url = `${this.baseUrl}/webhook/set/${this.instance}`;
     await fetch(url, {

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { connectWhatsAppAction, saveAgentConfigAction } from "./actions";
+import { saveAgentConfigAction } from "./actions";
 
 type AgentConfig = {
   isEnabled: boolean;
@@ -69,12 +69,12 @@ export function AgentConfigForm({ config }: { config: AgentConfig }) {
 
   const fetchQrCode = useCallback(async () => {
     setQrLoading(true);
+    setQrCode(null);
     try {
-      const res = await fetch("/api/agent/qrcode");
-      const data = (await res.json()) as { qr?: { base64?: string } };
-      if (data.qr?.base64) {
-        const b64 = data.qr.base64;
-        setQrCode(b64.startsWith("data:") ? b64 : `data:image/png;base64,${b64}`);
+      const res = await fetch("/api/agent/start-qr", { method: "POST" });
+      const data = (await res.json()) as { qr?: string; error?: string };
+      if (data.qr) {
+        setQrCode(data.qr);
       }
     } finally {
       setQrLoading(false);
@@ -157,33 +157,21 @@ export function AgentConfigForm({ config }: { config: AgentConfig }) {
               <div className="rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm">
                 <p className="font-medium text-blue-800">Como conectar</p>
                 <ol className="mt-1.5 list-decimal space-y-1 pl-4 text-blue-700">
-                  <li>Clique em <strong>Conectar WhatsApp</strong> abaixo.</li>
-                  <li>Em seguida, clique em <strong>Ver QR Code</strong>.</li>
+                  <li>Clique em <strong>Conectar e Ver QR Code</strong> abaixo.</li>
+                  <li>Aguarde ~15 segundos enquanto o QR é gerado.</li>
                   <li>No celular: WhatsApp → Dispositivos conectados → Conectar dispositivo.</li>
                   <li>Escaneie o QR Code com a câmera.</li>
                 </ol>
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
-                {isConfigured && (
-                  <form action={connectWhatsAppAction}>
-                    <button
-                      type="submit"
-                      className="w-full rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-700"
-                    >
-                      Conectar WhatsApp
-                    </button>
-                  </form>
-                )}
-                <button
-                  type="button"
-                  onClick={fetchQrCode}
-                  disabled={qrLoading || !isConfigured}
-                  className={`rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-40 ${!isConfigured ? "col-span-2" : ""}`}
-                >
-                  {qrLoading ? "Carregando…" : "Ver QR Code"}
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={fetchQrCode}
+                disabled={qrLoading || !isConfigured}
+                className="w-full rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-700 disabled:opacity-40"
+              >
+                {qrLoading ? "Gerando QR Code… aguarde ~15s" : "Conectar e Ver QR Code"}
+              </button>
             </>
           )}
 
