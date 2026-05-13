@@ -20,25 +20,41 @@ export async function POST() {
     return NextResponse.json({ error: "Agente não configurado." }, { status: 400 });
   }
 
-  // Delete existing instance and recreate to get a fresh QR
-  try { await evolution.deleteInstance(); } catch { /* may not exist */ }
+  // Check current status — if already open, no QR needed
+  const currentStatus = await evolution.getStatus();
+  if (currentStatus === "open") {
+    return NextResponse.json({ connected: true });
+  }
 
-  await new Promise((r) => setTimeout(r, 1000));
+  // If not connected, try to get QR directly (v1 returns it synchronously)
+  const qr = await evolution.getQrCode();
+  if (qr?.base64) {
+    const b64 = qr.base64;
+    return NextResponse.json({
+      qr: b64.startsWith("data:") ? b64 : `data:image/png;base64,${b64}`,
+    });
+  }
 
-  try { await evolution.createInstance(); } catch { /* ignore if exists */ }
+  // Instance doesn't exist or expired — recreate it
+  try { await evolution.deleteInstance(); } catch { /* ignore */ }
+  await new Promise((r) => setTimeout(r, 1500));
+  await evolution.createInstance();
 
-  // Poll for QR code (up to 15s)
+  // Register webhook
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://catalogo-saas-wine.vercel.app";
+  try {
+    await evolution.setWebhook(`${appUrl}/api/agent/webhook?storeId=${user.storeId}`);
+  } catch { /* non-fatal */ }
+
+  // Poll up to 15s for QR
   for (let i = 0; i < 15; i++) {
     await new Promise((r) => setTimeout(r, 1000));
-    const qr = await evolution.getQrCode();
-    if (qr?.base64) {
-      const b64 = qr.base64;
+    const fresh = await evolution.getQrCode();
+    if (fresh?.base64) {
+      const b64 = fresh.base64;
       return NextResponse.json({
         qr: b64.startsWith("data:") ? b64 : `data:image/png;base64,${b64}`,
       });
-    }
-    if (qr?.code) {
-      return NextResponse.json({ qr: null, code: qr.code });
     }
   }
 

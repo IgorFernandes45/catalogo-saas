@@ -97,13 +97,11 @@ export class EvolutionClient {
       method: "POST",
       headers: this.headers(),
       body: JSON.stringify({
-        webhook: {
-          enabled: true,
-          url: webhookUrl,
-          events: ["MESSAGES_UPSERT"],
-          webhookByEvents: false,
-          webhookBase64: false,
-        },
+        url: webhookUrl,
+        enabled: true,
+        events: ["MESSAGES_UPSERT"],
+        webhookByEvents: false,
+        webhookBase64: false,
       }),
     });
   }
