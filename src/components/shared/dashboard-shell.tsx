@@ -8,6 +8,7 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
+  MessageSquare,
   Package,
   Receipt,
   Settings,
@@ -34,6 +35,7 @@ const NAV_ICONS: Record<string, React.ReactNode> = {
   "/painel/relatorios":         <ChartBar className="size-4 shrink-0" />,
   "/painel/relatorios/estoque": <ChartBar className="size-4 shrink-0" />,
   "/painel/agente":             <Bot className="size-4 shrink-0" />,
+  "/painel/agente/conversas":   <MessageSquare className="size-4 shrink-0" />,
 };
 
 type DashboardShellProps = {
@@ -68,25 +70,27 @@ export function DashboardShell({
 
       <nav className="mt-4 space-y-1">
         {nav.map((item, i) => {
+          // /painel and /painel/agente use exact match to avoid highlighting parent when on a sub-route
           const isActive =
-            item.href === "/painel"
+            item.href === "/painel" || item.href === "/painel/agente"
               ? pathname === item.href
               : pathname === item.href || pathname.startsWith(`${item.href}/`);
 
           const icon = NAV_ICONS[item.href];
 
           const isAgente = item.href === "/painel/agente";
+          const isConversas = item.href === "/painel/agente/conversas";
           const prevIsRelatorio = nav[i - 1]?.href.startsWith("/painel/relatorios");
 
           return (
             <div key={item.href}>
-              {isAgente && (prevIsRelatorio || i > 0) && (
+              {(isAgente && (prevIsRelatorio || i > 0)) && (
                 <div className="my-2 border-t border-white/10" />
               )}
               <Link
                 href={item.href}
                 onClick={() => setMobileNavOpen(false)}
-                className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
+                className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium transition ${isConversas ? "pl-7" : ""} ${
                   isActive
                     ? "bg-orange-500/20 text-orange-200"
                     : "text-slate-300 hover:bg-white/5 hover:text-white"

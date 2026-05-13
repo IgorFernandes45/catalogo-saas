@@ -143,10 +143,18 @@ export async function saveStoreAgentAction(formData: FormData) {
   const phoneNumber = String(formData.get("phoneNumber") ?? "").trim() || null;
   const evolutionUrl = String(formData.get("evolutionUrl") ?? "").trim() || null;
 
+  // Preserve existing secret or generate a new one
+  const existing = await prisma.agentConfig.findUnique({
+    where: { storeId },
+    select: { webhookSecret: true },
+  });
+  const { randomBytes } = await import("crypto");
+  const webhookSecret = existing?.webhookSecret ?? randomBytes(20).toString("hex");
+
   await prisma.agentConfig.upsert({
     where: { storeId },
-    create: { storeId, isEnabled, evolutionInstance, phoneNumber, evolutionUrl },
-    update: { isEnabled, evolutionInstance, phoneNumber, evolutionUrl },
+    create: { storeId, isEnabled, evolutionInstance, phoneNumber, evolutionUrl, webhookSecret },
+    update: { isEnabled, evolutionInstance, phoneNumber, evolutionUrl, webhookSecret },
   });
 
   if (isEnabled && evolutionInstance) {
@@ -159,7 +167,9 @@ export async function saveStoreAgentAction(formData: FormData) {
       }
       try {
         const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://catalogo-saas-wine.vercel.app";
-        await evolution.setWebhook(`${appUrl}/api/agent/webhook?storeId=${storeId}`);
+        await evolution.setWebhook(
+          `${appUrl}/api/agent/webhook?storeId=${storeId}&secret=${webhookSecret}`,
+        );
       } catch {
         // Webhook registration failure is non-fatal
       }

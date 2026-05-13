@@ -39,8 +39,11 @@ export async function getStoreDashboard(storeId: string) {
     categoryCount,
     activeProducts,
     soldOrders,
+    pendingOrders,
     lowStockProducts,
     totalRevenue,
+    storeInfo,
+    agentInfo,
   ] =
     await Promise.all([
       prisma.product.count({ where: { storeId } }),
@@ -48,6 +51,9 @@ export async function getStoreDashboard(storeId: string) {
       prisma.product.count({ where: { storeId, isActive: true } }),
       prisma.order.count({
         where: { storeId, status: "SOLD" },
+      }),
+      prisma.order.count({
+        where: { storeId, status: "PENDING" },
       }),
       prisma.product.findMany({
         where: {
@@ -99,15 +105,35 @@ export async function getStoreDashboard(storeId: string) {
           subtotal: true,
         },
       }),
+      prisma.store.findUnique({
+        where: { id: storeId },
+        select: { logoUrl: true, whatsappNumber: true },
+      }),
+      prisma.agentConfig.findUnique({
+        where: { storeId },
+        select: { isEnabled: true, evolutionInstance: true, connectionStatus: true },
+      }),
     ]);
+
+  const onboarding = {
+    hasLogo: !!storeInfo?.logoUrl,
+    hasCategory: categoryCount > 0,
+    hasProduct: productCount > 0,
+    agentEnabled: !!agentInfo?.isEnabled,
+    whatsappConfigured: !!agentInfo?.evolutionInstance,
+  };
+  const onboardingDone = Object.values(onboarding).every(Boolean);
 
   return {
     productCount,
     categoryCount,
     activeProducts,
     soldOrders,
+    pendingOrders,
     lowStockProducts,
     totalRevenue: Number(totalRevenue._sum.subtotal || 0),
+    onboarding,
+    onboardingDone,
   };
 }
 

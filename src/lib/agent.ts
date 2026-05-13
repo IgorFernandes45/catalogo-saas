@@ -4,7 +4,9 @@
  */
 
 import Anthropic from "@anthropic-ai/sdk";
+import { unstable_cache } from "next/cache";
 
+import { buildEvolutionClient } from "@/lib/evolution";
 import { prisma } from "@/lib/prisma";
 
 const anthropic = new Anthropic({
@@ -19,6 +21,14 @@ export type AgentMessage = {
 // ─── Context builder ────────────────────────────────────────────────────────
 
 async function buildStoreContext(storeId: string): Promise<string> {
+  return unstable_cache(
+    () => _buildStoreContext(storeId),
+    [`agent-context:${storeId}`],
+    { revalidate: 300 },
+  )();
+}
+
+async function _buildStoreContext(storeId: string): Promise<string> {
   const [store, config, categories] = await Promise.all([
     prisma.store.findUnique({
       where: { id: storeId },
@@ -332,6 +342,25 @@ async function runTool(
         },
       },
     });
+
+    // Notify store owner via WhatsApp
+    try {
+      const [store, agentCfg] = await Promise.all([
+        prisma.store.findUnique({ where: { id: storeId }, select: { whatsappNumber: true } }),
+        prisma.agentConfig.findUnique({ where: { storeId }, select: { evolutionInstance: true, evolutionUrl: true } }),
+      ]);
+      if (store?.whatsappNumber && agentCfg) {
+        const evolution = buildEvolutionClient(agentCfg.evolutionInstance, agentCfg.evolutionUrl);
+        if (evolution) {
+          const orderNum = order.id.slice(-6).toUpperCase();
+          const itemsList = items.map((i) => `• ${i.quantity}x ${i.productNameSnapshot}`).join("\n");
+          const msg = `🛒 *Novo pedido #${orderNum} via agente IA*\n\nCliente: ${input.customerName as string}\nTel: ${input.customerPhone as string}\n\n${itemsList}\n\n*Total: R$ ${subtotal.toFixed(2)}*\n\nAcesse o painel para confirmar.`;
+          await evolution.sendText(`${store.whatsappNumber}@s.whatsapp.net`, msg);
+        }
+      }
+    } catch {
+      // Notification failure must not block the order confirmation
+    }
 
     return `Pedido #${order.id.slice(-6).toUpperCase()} criado com sucesso! Total: R$ ${subtotal.toFixed(2)}. O pedido foi registrado no sistema e a loja irá confirmar em breve.`;
   }

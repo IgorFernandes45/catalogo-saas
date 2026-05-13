@@ -35,7 +35,7 @@ export async function registerWebhookAction() {
 
   const config = await prisma.agentConfig.findUnique({
     where: { storeId: user.storeId },
-    select: { evolutionInstance: true, evolutionUrl: true },
+    select: { evolutionInstance: true, evolutionUrl: true, webhookSecret: true },
   });
 
   const evolution = buildEvolutionClient(config?.evolutionInstance, config?.evolutionUrl);
@@ -51,7 +51,8 @@ export async function registerWebhookAction() {
     redirect("/painel/agente?error=URL+do+sistema+não+configurada.");
   }
 
-  const webhookUrl = `${appUrl}/api/agent/webhook?storeId=${user.storeId}`;
+  const secretParam = config?.webhookSecret ? `&secret=${config.webhookSecret}` : "";
+  const webhookUrl = `${appUrl}/api/agent/webhook?storeId=${user.storeId}${secretParam}`;
 
   try {
     await evolution.setWebhook(webhookUrl);

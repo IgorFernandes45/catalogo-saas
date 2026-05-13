@@ -1,6 +1,6 @@
 /**
  * Evolution API webhook — receives incoming WhatsApp messages and runs the AI agent.
- * URL: POST /api/agent/webhook?storeId=xxx
+ * URL: POST /api/agent/webhook?storeId=xxx&secret=yyy
  */
 
 import { NextResponse } from "next/server";
@@ -49,10 +49,16 @@ export async function POST(request: Request) {
 
     const config = await prisma.agentConfig.findUnique({
       where: { storeId },
-      select: { isEnabled: true, evolutionInstance: true, evolutionUrl: true },
+      select: { isEnabled: true, evolutionInstance: true, evolutionUrl: true, webhookSecret: true },
     });
 
     if (!config?.isEnabled) return NextResponse.json({ ok: true });
+
+    // Validate secret when one is configured
+    if (config.webhookSecret) {
+      const secret = searchParams.get("secret");
+      if (secret !== config.webhookSecret) return NextResponse.json({ ok: true });
+    }
 
     const evolution = buildEvolutionClient(config.evolutionInstance, config.evolutionUrl);
     if (!evolution) return NextResponse.json({ ok: true });

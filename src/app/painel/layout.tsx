@@ -13,6 +13,7 @@ const nav = [
   { href: "/painel/relatorios", label: "Relatórios" },
   { href: "/painel/relatorios/estoque", label: "Mov. Estoque" },
   { href: "/painel/agente", label: "Agente IA" },
+  { href: "/painel/agente/conversas", label: "Conversas IA" },
 ];
 
 export default async function StoreLayout({
@@ -25,7 +26,7 @@ export default async function StoreLayout({
   const visibleNav = salesEnabled
     ? nav
     : nav.filter((item) =>
-        ["/painel", "/painel/perfil", "/painel/categorias", "/painel/produtos", "/painel/estoque", "/painel/agente"].includes(
+        ["/painel", "/painel/perfil", "/painel/categorias", "/painel/produtos", "/painel/estoque", "/painel/agente", "/painel/agente/conversas"].includes(
           item.href,
         ),
       );

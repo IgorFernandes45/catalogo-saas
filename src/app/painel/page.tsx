@@ -5,13 +5,123 @@ import { StatCard } from "@/components/shared/stat-card";
 import { requireStoreUser, storeHasSales } from "@/lib/auth";
 import { getStoreDashboard } from "@/lib/queries";
 
+const ONBOARDING_STEPS = [
+  {
+    key: "hasLogo" as const,
+    label: "Logo da loja enviada",
+    href: "/painel/perfil",
+    action: "Fazer upload",
+  },
+  {
+    key: "hasCategory" as const,
+    label: "Primeira categoria criada",
+    href: "/painel/categorias",
+    action: "Criar categoria",
+  },
+  {
+    key: "hasProduct" as const,
+    label: "Primeiro produto cadastrado",
+    href: "/painel/produtos",
+    action: "Cadastrar produto",
+  },
+  {
+    key: "agentEnabled" as const,
+    label: "Agente IA habilitado",
+    href: "/painel/agente",
+    action: "Ver agente",
+  },
+  {
+    key: "whatsappConfigured" as const,
+    label: "WhatsApp configurado pelo admin",
+    href: "/painel/agente",
+    action: "Ver conexão",
+  },
+];
+
 export default async function StoreDashboardPage() {
   const user = await requireStoreUser();
   const dashboard = await getStoreDashboard(user.storeId!);
   const salesEnabled = storeHasSales(user.store?.accessMode);
 
+  const completedSteps = Object.values(dashboard.onboarding).filter(Boolean).length;
+  const totalSteps = ONBOARDING_STEPS.length;
+  const progressPct = Math.round((completedSteps / totalSteps) * 100);
+
   return (
     <div className="grid gap-6">
+      {/* Onboarding checklist */}
+      {!dashboard.onboardingDone && (
+        <section className="surface-card p-6">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-sm uppercase tracking-[0.25em] text-orange-500">Primeiros passos</p>
+              <h2 className="mt-1 text-xl font-semibold text-slate-950">
+                Configure sua loja — {completedSteps}/{totalSteps} concluídos
+              </h2>
+            </div>
+            <span className="shrink-0 text-2xl font-bold text-orange-500">{progressPct}%</span>
+          </div>
+
+          <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100">
+            <div
+              className="h-full rounded-full bg-orange-500 transition-all duration-500"
+              style={{ width: `${progressPct}%` }}
+            />
+          </div>
+
+          <div className="mt-4 grid gap-2 sm:grid-cols-2">
+            {ONBOARDING_STEPS.map((step) => {
+              const done = dashboard.onboarding[step.key];
+              return (
+                <Link
+                  key={step.key}
+                  href={done ? "#" : step.href}
+                  className={`flex items-center gap-3 rounded-2xl border px-4 py-3 text-sm transition ${
+                    done
+                      ? "pointer-events-none border-green-100 bg-green-50"
+                      : "border-slate-200 bg-slate-50 hover:border-orange-200 hover:bg-orange-50"
+                  }`}
+                >
+                  <span
+                    className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+                      done ? "bg-green-500 text-white" : "bg-slate-200 text-slate-500"
+                    }`}
+                  >
+                    {done ? "✓" : "→"}
+                  </span>
+                  <span className={done ? "text-green-700 line-through" : "text-slate-700"}>
+                    {step.label}
+                  </span>
+                  {!done && (
+                    <span className="ml-auto shrink-0 text-xs font-medium text-orange-500">
+                      {step.action}
+                    </span>
+                  )}
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* Pending orders alert */}
+      {salesEnabled && dashboard.pendingOrders > 0 && (
+        <Link
+          href="/painel/pedidos"
+          className="flex items-center justify-between gap-4 rounded-[24px] border border-amber-200 bg-amber-50 px-5 py-4 transition hover:border-amber-300"
+        >
+          <div>
+            <p className="font-semibold text-amber-800">
+              {dashboard.pendingOrders} pedido{dashboard.pendingOrders !== 1 ? "s" : ""} aguardando confirmação
+            </p>
+            <p className="mt-0.5 text-sm text-amber-700">Clique para ver a fila de pedidos pendentes</p>
+          </div>
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-amber-500 text-xl font-bold text-white">
+            {dashboard.pendingOrders}
+          </span>
+        </Link>
+      )}
+
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
         <StatCard label="Produtos" value={dashboard.productCount} />
         <StatCard label="Categorias" value={dashboard.categoryCount} />
@@ -51,6 +161,8 @@ export default async function StoreDashboardPage() {
                     { href: "/painel/relatorios/estoque", label: "Abrir relatório de estoque" },
                   ]
                 : []),
+              { href: "/painel/agente", label: "Configurar agente IA do WhatsApp" },
+              { href: "/painel/agente/conversas", label: "Ver conversas do agente" },
               { href: `/loja/${user.store?.slug}`, label: "Abrir catálogo público da loja", target: "_blank" },
             ].map((item) => (
               <Link
