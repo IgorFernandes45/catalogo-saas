@@ -34,6 +34,13 @@ function parsePayments(json: string | null): string[] {
 
 type Tab = "conexao" | "entrega" | "pagamentos" | "treinamento";
 
+const TABS: { key: Tab; label: string }[] = [
+  { key: "conexao",     label: "Conexão" },
+  { key: "entrega",     label: "Entrega" },
+  { key: "pagamentos",  label: "Pagamentos" },
+  { key: "treinamento", label: "Treinamento" },
+];
+
 export function AgentConfigForm({ config }: { config: AgentConfig }) {
   const [activeTab, setActiveTab] = useState<Tab>("conexao");
   const [connectionStatus, setConnectionStatus] = useState(config?.connectionStatus ?? "disconnected");
@@ -82,42 +89,36 @@ export function AgentConfigForm({ config }: { config: AgentConfig }) {
   }, [qrCode, fetchStatus]);
 
   const statusConfig = {
-    open:         { label: "Conectado",    color: "text-green-600",  dot: "bg-green-500" },
-    connecting:   { label: "Conectando…",  color: "text-yellow-600", dot: "bg-yellow-400" },
-    close:        { label: "Desconectado", color: "text-red-500",    dot: "bg-red-400" },
-    disconnected: { label: "Desconectado", color: "text-red-500",    dot: "bg-red-400" },
-  }[connectionStatus] ?? { label: connectionStatus, color: "text-slate-500", dot: "bg-slate-400" };
-
-  const tabs: { key: Tab; label: string }[] = [
-    { key: "conexao",     label: "Conexão" },
-    { key: "entrega",     label: "Entrega" },
-    { key: "pagamentos",  label: "Pagamentos" },
-    { key: "treinamento", label: "Treinamento" },
-  ];
+    open:         { label: "Conectado",    color: "text-green-600",  dot: "bg-green-500",  bg: "border-green-200 bg-green-50" },
+    connecting:   { label: "Conectando…",  color: "text-yellow-600", dot: "bg-yellow-400", bg: "border-yellow-200 bg-yellow-50" },
+    close:        { label: "Desconectado", color: "text-red-500",    dot: "bg-red-400",    bg: "border-red-200 bg-red-50" },
+    disconnected: { label: "Desconectado", color: "text-red-500",    dot: "bg-red-400",    bg: "border-red-200 bg-red-50" },
+  }[connectionStatus] ?? { label: connectionStatus, color: "text-slate-500", dot: "bg-slate-400", bg: "border-slate-200 bg-slate-50" };
 
   if (!config?.isEnabled) {
     return (
       <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-8 text-center">
-        <p className="text-2xl">🤖</p>
-        <p className="mt-3 font-semibold text-slate-800">Agente IA não habilitado</p>
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-200 text-2xl">
+          🤖
+        </div>
+        <p className="mt-4 font-semibold text-slate-800">Agente IA não habilitado</p>
         <p className="mt-1 text-sm text-slate-500">
-          O agente de IA ainda não foi habilitado para esta loja.
-          Entre em contato com o administrador do sistema para ativar.
+          Entre em contato com o administrador do sistema para ativar o agente para esta loja.
         </p>
       </div>
     );
   }
 
   return (
-    <div className="mt-6">
+    <div className="mt-6 space-y-5">
       {/* Tabs */}
-      <div className="flex gap-1 rounded-2xl border border-slate-200 bg-slate-100 p-1">
-        {tabs.map((tab) => (
+      <div className="flex gap-1 overflow-x-auto rounded-2xl border border-slate-200 bg-slate-100 p-1 scrollbar-hidden">
+        {TABS.map((tab) => (
           <button
             key={tab.key}
             type="button"
             onClick={() => setActiveTab(tab.key)}
-            className={`flex-1 rounded-xl py-2 text-sm font-medium transition-all ${
+            className={`flex-1 whitespace-nowrap rounded-xl px-3 py-2 text-sm font-medium transition-all ${
               activeTab === tab.key
                 ? "bg-white text-slate-900 shadow-sm"
                 : "text-slate-500 hover:text-slate-700"
@@ -128,15 +129,15 @@ export function AgentConfigForm({ config }: { config: AgentConfig }) {
         ))}
       </div>
 
-      {/* ── Tab: Conexão ──────────────────────────────────────────── */}
+      {/* ── Tab: Conexão ───────────────────────────────────── */}
       {activeTab === "conexao" && (
-        <div className="mt-5 space-y-4">
-          {/* Status card */}
-          <div className="flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-5 py-4">
+        <div className="space-y-4">
+          {/* Status */}
+          <div className={`flex items-center justify-between rounded-2xl border px-5 py-4 ${statusConfig.bg}`}>
             <div className="flex items-center gap-3">
-              <span className={`h-2.5 w-2.5 rounded-full ${statusConfig.dot}`} />
+              <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${statusConfig.dot}`} />
               <div>
-                <p className="text-xs text-slate-400">Status do WhatsApp</p>
+                <p className="text-xs text-slate-500">Status do WhatsApp</p>
                 <p className={`text-sm font-semibold ${statusConfig.color}`}>
                   {statusLoading ? "Verificando…" : statusConfig.label}
                 </p>
@@ -145,7 +146,7 @@ export function AgentConfigForm({ config }: { config: AgentConfig }) {
             <button
               type="button"
               onClick={fetchStatus}
-              className="rounded-xl border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:bg-slate-50"
+              className="shrink-0 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:bg-slate-50"
             >
               Atualizar
             </button>
@@ -153,20 +154,23 @@ export function AgentConfigForm({ config }: { config: AgentConfig }) {
 
           {connectionStatus !== "open" && (
             <>
-              <div className="rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-700">
-                <p className="font-medium">Como conectar</p>
-                <ol className="mt-1 list-decimal space-y-1 pl-4 text-blue-600">
+              <div className="rounded-2xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm">
+                <p className="font-medium text-blue-800">Como conectar</p>
+                <ol className="mt-1.5 list-decimal space-y-1 pl-4 text-blue-700">
                   <li>Clique em <strong>Conectar WhatsApp</strong> abaixo.</li>
-                  <li>Clique em <strong>Ver QR Code</strong>.</li>
-                  <li>Abra o WhatsApp no celular → Dispositivos conectados → Conectar dispositivo.</li>
+                  <li>Em seguida, clique em <strong>Ver QR Code</strong>.</li>
+                  <li>No celular: WhatsApp → Dispositivos conectados → Conectar dispositivo.</li>
                   <li>Escaneie o QR Code com a câmera.</li>
                 </ol>
               </div>
 
-              <div className="flex gap-2">
+              <div className="grid grid-cols-2 gap-2">
                 {isConfigured && (
-                  <form action={connectWhatsAppAction} className="flex-1">
-                    <button type="submit" className="w-full rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-700">
+                  <form action={connectWhatsAppAction}>
+                    <button
+                      type="submit"
+                      className="w-full rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-700"
+                    >
                       Conectar WhatsApp
                     </button>
                   </form>
@@ -175,7 +179,7 @@ export function AgentConfigForm({ config }: { config: AgentConfig }) {
                   type="button"
                   onClick={fetchQrCode}
                   disabled={qrLoading || !isConfigured}
-                  className="flex-1 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-40"
+                  className={`rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:opacity-40 ${!isConfigured ? "col-span-2" : ""}`}
                 >
                   {qrLoading ? "Carregando…" : "Ver QR Code"}
                 </button>
@@ -184,11 +188,11 @@ export function AgentConfigForm({ config }: { config: AgentConfig }) {
           )}
 
           {connectionStatus === "open" && (
-            <div className="rounded-2xl border border-green-200 bg-green-50 px-4 py-4 text-sm text-green-800">
-              <p className="font-semibold">✓ WhatsApp conectado!</p>
-              <p className="mt-1 text-green-700">
+            <div className="rounded-2xl border border-green-200 bg-green-50 px-5 py-4">
+              <p className="font-semibold text-green-800">✓ WhatsApp conectado</p>
+              <p className="mt-1 text-sm text-green-700">
                 O agente está ativo e respondendo mensagens automaticamente.
-                A sessão se mantém enquanto o celular tiver conexão com a internet.
+                A sessão se mantém enquanto o celular tiver internet.
               </p>
             </div>
           )}
@@ -197,25 +201,24 @@ export function AgentConfigForm({ config }: { config: AgentConfig }) {
             <div className="flex flex-col items-center gap-3 rounded-2xl border border-slate-200 bg-white p-6">
               <p className="text-sm font-medium text-slate-700">Escaneie com o WhatsApp do celular</p>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={qrCode} alt="QR Code WhatsApp" className="h-60 w-60 rounded-xl" />
-              <p className="text-xs text-slate-400">
-                Verificando conexão automaticamente a cada 5 segundos…
-              </p>
+              <img src={qrCode} alt="QR Code WhatsApp" className="h-56 w-56 rounded-xl" />
+              <p className="text-xs text-slate-400">Verificando conexão a cada 5 segundos…</p>
             </div>
           )}
         </div>
       )}
 
-      {/* ── Tabs com form ─────────────────────────────────────────── */}
+      {/* ── Tabs com form ──────────────────────────────────── */}
       {activeTab !== "conexao" && (
-        <form action={saveAgentConfigAction} className="mt-5 space-y-5">
+        <form action={saveAgentConfigAction} className="space-y-5">
+
           {/* Entrega */}
           {activeTab === "entrega" && (
             <div className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
                   <label className="label-field">Taxa de entrega</label>
-                  <input type="text" name="deliveryFee" defaultValue={config?.deliveryFee ?? ""} placeholder="Ex.: R$ 5,00 | Grátis acima de R$ 80" className="input-field" />
+                  <input type="text" name="deliveryFee" defaultValue={config?.deliveryFee ?? ""} placeholder="Ex.: R$ 5,00 ou Grátis acima de R$ 80" className="input-field" />
                 </div>
                 <div>
                   <label className="label-field">Prazo de entrega</label>
@@ -223,14 +226,13 @@ export function AgentConfigForm({ config }: { config: AgentConfig }) {
                 </div>
                 <div>
                   <label className="label-field">Área de entrega</label>
-                  <input type="text" name="deliveryArea" defaultValue={config?.deliveryArea ?? ""} placeholder="Ex.: Centro, Bairro X, até 10km" className="input-field" />
+                  <input type="text" name="deliveryArea" defaultValue={config?.deliveryArea ?? ""} placeholder="Ex.: Centro, Bairro X, até 10 km" className="input-field" />
                 </div>
                 <div>
                   <label className="label-field">Observação sobre entrega</label>
                   <input type="text" name="deliveryFeeNote" defaultValue={config?.deliveryFeeNote ?? ""} placeholder="Ex.: Retirada no local disponível" className="input-field" />
                 </div>
               </div>
-              {/* hidden fields para não perder outros valores */}
               <input type="hidden" name="agentName" value={config?.agentName ?? "Assistente"} />
               <input type="hidden" name="greetingMessage" value={config?.greetingMessage ?? ""} />
               <input type="hidden" name="openingHours" value={config?.openingHours ?? ""} />
@@ -241,18 +243,18 @@ export function AgentConfigForm({ config }: { config: AgentConfig }) {
           {/* Pagamentos */}
           {activeTab === "pagamentos" && (
             <div className="space-y-4">
-              <p className="text-sm text-slate-600">Selecione as formas de pagamento aceitas.</p>
-              <div className="space-y-3">
+              <p className="text-sm text-slate-500">Selecione as formas de pagamento aceitas.</p>
+              <div className="space-y-2">
                 {PAYMENT_OPTIONS.map((opt) => (
-                  <label key={opt} className="flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 cursor-pointer hover:bg-slate-100 transition">
-                    <input type="checkbox" name={`payment_${opt}`} defaultChecked={selectedPayments.includes(opt)} className="h-4 w-4 accent-orange-500" />
+                  <label key={opt} className="flex cursor-pointer items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3 transition hover:border-orange-200 hover:bg-orange-50">
+                    <input type="checkbox" name={`payment_${opt}`} defaultChecked={selectedPayments.includes(opt)} className="h-4 w-4 shrink-0 accent-orange-500" />
                     <span className="text-sm font-medium text-slate-700">{opt}</span>
                   </label>
                 ))}
               </div>
               <div>
                 <label className="label-field">Outro método de pagamento</label>
-                <input type="text" name="paymentCustom" defaultValue={selectedPayments.find((p) => !PAYMENT_OPTIONS.includes(p)) ?? ""} placeholder="Ex.: Boleto, Vale" className="input-field" />
+                <input type="text" name="paymentCustom" defaultValue={selectedPayments.find((p) => !PAYMENT_OPTIONS.includes(p)) ?? ""} placeholder="Ex.: Boleto, Vale-refeição" className="input-field" />
               </div>
               <input type="hidden" name="agentName" value={config?.agentName ?? "Assistente"} />
               <input type="hidden" name="greetingMessage" value={config?.greetingMessage ?? ""} />
@@ -271,7 +273,7 @@ export function AgentConfigForm({ config }: { config: AgentConfig }) {
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
                   <label className="label-field">Nome do agente</label>
-                  <input type="text" name="agentName" defaultValue={config?.agentName ?? "Assistente"} placeholder="Ex.: Assistente, Lara, Robô da Loja" className="input-field" />
+                  <input type="text" name="agentName" defaultValue={config?.agentName ?? "Assistente"} placeholder="Ex.: Assistente, Lara, Robô" className="input-field" />
                 </div>
                 <div>
                   <label className="label-field">Mensagem de boas-vindas</label>
@@ -279,7 +281,7 @@ export function AgentConfigForm({ config }: { config: AgentConfig }) {
                 </div>
                 <div className="sm:col-span-2">
                   <label className="label-field">Horário de funcionamento</label>
-                  <input type="text" name="openingHours" defaultValue={config?.openingHours ?? ""} placeholder="Ex.: Seg a Sex das 9h às 18h" className="input-field" />
+                  <input type="text" name="openingHours" defaultValue={config?.openingHours ?? ""} placeholder="Ex.: Seg a Sex das 9h às 18h, Sáb das 9h às 13h" className="input-field" />
                 </div>
               </div>
               <div>
@@ -288,10 +290,10 @@ export function AgentConfigForm({ config }: { config: AgentConfig }) {
                   name="customInstructions"
                   rows={10}
                   defaultValue={config?.customInstructions ?? ""}
-                  placeholder={`Escreva como se estivesse treinando um atendente. Exemplos:\n\n- Sempre ofereça frete grátis para pedidos acima de R$ 100.\n- Se o cliente pedir desconto, conceda até 5%.\n- Nossos produtos têm garantia de 30 dias.\n- Parcelamos em até 3x sem juros no cartão.`}
+                  placeholder={`Escreva como se estivesse treinando um atendente:\n\n- Sempre ofereça frete grátis para pedidos acima de R$ 100.\n- Se o cliente pedir desconto, conceda até 5%.\n- Parcelamos em até 3x sem juros no cartão.`}
                   className="input-field resize-none font-mono text-sm"
                 />
-                <p className="mt-1 text-xs text-slate-400">O agente seguirá estas instruções ao conversar com clientes.</p>
+                <p className="mt-1 text-xs text-slate-400">O agente seguirá estas instruções ao conversar com os clientes.</p>
               </div>
               <input type="hidden" name="deliveryFee" value={config?.deliveryFee ?? ""} />
               <input type="hidden" name="deliveryTime" value={config?.deliveryTime ?? ""} />
@@ -301,7 +303,7 @@ export function AgentConfigForm({ config }: { config: AgentConfig }) {
           )}
 
           <div className="flex justify-end border-t border-slate-100 pt-4">
-            <button type="submit" className="btn-primary">Salvar</button>
+            <button type="submit" className="btn-primary">Salvar alterações</button>
           </div>
         </form>
       )}

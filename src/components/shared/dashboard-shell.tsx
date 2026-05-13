@@ -2,11 +2,39 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LogOut, Menu, X } from "lucide-react";
+import {
+  Bot,
+  ChartBar,
+  LayoutDashboard,
+  LogOut,
+  Menu,
+  Package,
+  Receipt,
+  Settings,
+  ShoppingCart,
+  Tag,
+  Users,
+  Warehouse,
+  X,
+} from "lucide-react";
 import { useState } from "react";
 
 import { KeyboardShortcuts } from "@/components/shared/keyboard-shortcuts";
 import { SessionUser } from "@/lib/auth";
+
+const NAV_ICONS: Record<string, React.ReactNode> = {
+  "/painel":                    <LayoutDashboard className="size-4 shrink-0" />,
+  "/painel/perfil":             <Settings className="size-4 shrink-0" />,
+  "/painel/categorias":         <Tag className="size-4 shrink-0" />,
+  "/painel/produtos":           <Package className="size-4 shrink-0" />,
+  "/painel/estoque":            <Warehouse className="size-4 shrink-0" />,
+  "/painel/clientes":           <Users className="size-4 shrink-0" />,
+  "/painel/pedidos":            <ShoppingCart className="size-4 shrink-0" />,
+  "/painel/vendas":             <Receipt className="size-4 shrink-0" />,
+  "/painel/relatorios":         <ChartBar className="size-4 shrink-0" />,
+  "/painel/relatorios/estoque": <ChartBar className="size-4 shrink-0" />,
+  "/painel/agente":             <Bot className="size-4 shrink-0" />,
+};
 
 type DashboardShellProps = {
   title: string;
@@ -38,44 +66,48 @@ export function DashboardShell({
         <p className="mt-2 text-xs leading-5 text-slate-300">{session.email}</p>
       </div>
 
-      <nav className="mt-4 grid gap-2">
-        {nav.map((item) => {
+      <nav className="mt-4 space-y-1">
+        {nav.map((item, i) => {
           const isActive =
             item.href === "/painel"
               ? pathname === item.href
               : pathname === item.href || pathname.startsWith(`${item.href}/`);
 
+          const icon = NAV_ICONS[item.href];
+
+          const isAgente = item.href === "/painel/agente";
+          const prevIsRelatorio = nav[i - 1]?.href.startsWith("/painel/relatorios");
+
           return (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={() => setMobileNavOpen(false)}
-              className={`rounded-2xl border px-4 py-3 text-sm font-medium transition ${
-                isActive
-                  ? "border-orange-300 bg-orange-500/15 text-white"
-                  : "border-white/10 text-slate-100 hover:border-orange-300 hover:text-orange-200"
-              }`}
-              aria-current={isActive ? "page" : undefined}
-            >
-              {item.label}
-            </Link>
+            <div key={item.href}>
+              {isAgente && (prevIsRelatorio || i > 0) && (
+                <div className="my-2 border-t border-white/10" />
+              )}
+              <Link
+                href={item.href}
+                onClick={() => setMobileNavOpen(false)}
+                className={`flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
+                  isActive
+                    ? "bg-orange-500/20 text-orange-200"
+                    : "text-slate-300 hover:bg-white/5 hover:text-white"
+                }`}
+                aria-current={isActive ? "page" : undefined}
+              >
+                <span className={isActive ? "text-orange-300" : "text-slate-400"}>
+                  {icon}
+                </span>
+                {item.label}
+              </Link>
+            </div>
           );
         })}
       </nav>
 
-      <div className="mt-5 rounded-2xl bg-white/5 px-4 py-3 text-xs leading-6 text-slate-300">
+      <div className="mt-4 rounded-xl bg-white/5 px-3 py-2.5 text-xs leading-6 text-slate-400">
         {salesEnabled ? (
-          <>
-            F3 Pedidos/Venda<br />
-            F4 Produtos<br />
-            F6 Clientes<br />
-            F7 Relatórios
-          </>
+          <><span className="text-slate-500">F3</span> Pedidos &nbsp;<span className="text-slate-500">F4</span> Produtos &nbsp;<span className="text-slate-500">F6</span> Clientes</>
         ) : (
-          <>
-            Modo somente catálogo<br />
-            F4 Produtos
-          </>
+          <><span className="text-slate-500">F4</span> Produtos &nbsp;· Modo catálogo</>
         )}
       </div>
 
