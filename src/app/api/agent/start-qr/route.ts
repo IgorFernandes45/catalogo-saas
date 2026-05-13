@@ -12,10 +12,10 @@ export async function POST() {
 
   const config = await prisma.agentConfig.findUnique({
     where: { storeId: user.storeId },
-    select: { evolutionInstance: true },
+    select: { evolutionInstance: true, evolutionUrl: true },
   });
 
-  const evolution = buildEvolutionClient(config?.evolutionInstance);
+  const evolution = buildEvolutionClient(config?.evolutionInstance, config?.evolutionUrl);
   if (!evolution) {
     return NextResponse.json({ error: "Agente não configurado." }, { status: 400 });
   }

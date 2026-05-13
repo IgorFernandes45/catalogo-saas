@@ -36,10 +36,10 @@ export async function registerWebhookAction() {
 
   const config = await prisma.agentConfig.findUnique({
     where: { storeId: user.storeId },
-    select: { evolutionInstance: true },
+    select: { evolutionInstance: true, evolutionUrl: true },
   });
 
-  const evolution = buildEvolutionClient(config?.evolutionInstance);
+  const evolution = buildEvolutionClient(config?.evolutionInstance, config?.evolutionUrl);
   if (!evolution) {
     redirect("/painel/agente?error=Agente+não+configurado.+Contate+o+administrador.");
   }
@@ -68,10 +68,10 @@ export async function connectWhatsAppAction() {
 
   const config = await prisma.agentConfig.findUnique({
     where: { storeId: user.storeId },
-    select: { evolutionInstance: true },
+    select: { evolutionInstance: true, evolutionUrl: true },
   });
 
-  const evolution = buildEvolutionClient(config?.evolutionInstance);
+  const evolution = buildEvolutionClient(config?.evolutionInstance, config?.evolutionUrl);
   if (!evolution) {
     redirect("/painel/agente?error=Agente+não+configurado.+Contate+o+administrador.");
   }

@@ -49,12 +49,12 @@ export async function POST(request: Request) {
 
     const config = await prisma.agentConfig.findUnique({
       where: { storeId },
-      select: { isEnabled: true, evolutionInstance: true },
+      select: { isEnabled: true, evolutionInstance: true, evolutionUrl: true },
     });
 
     if (!config?.isEnabled) return NextResponse.json({ ok: true });
 
-    const evolution = buildEvolutionClient(config.evolutionInstance);
+    const evolution = buildEvolutionClient(config.evolutionInstance, config.evolutionUrl);
     if (!evolution) return NextResponse.json({ ok: true });
 
     const customerPhone = extractPhone(remoteJid);

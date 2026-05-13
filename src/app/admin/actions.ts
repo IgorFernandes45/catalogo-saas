@@ -141,15 +141,16 @@ export async function saveStoreAgentAction(formData: FormData) {
   const isEnabled = formData.get("agentEnabled") === "on";
   const evolutionInstance = String(formData.get("evolutionInstance") ?? "").trim() || null;
   const phoneNumber = String(formData.get("phoneNumber") ?? "").trim() || null;
+  const evolutionUrl = String(formData.get("evolutionUrl") ?? "").trim() || null;
 
   await prisma.agentConfig.upsert({
     where: { storeId },
-    create: { storeId, isEnabled, evolutionInstance, phoneNumber },
-    update: { isEnabled, evolutionInstance, phoneNumber },
+    create: { storeId, isEnabled, evolutionInstance, phoneNumber, evolutionUrl },
+    update: { isEnabled, evolutionInstance, phoneNumber, evolutionUrl },
   });
 
   if (isEnabled && evolutionInstance) {
-    const evolution = buildEvolutionClient(evolutionInstance);
+    const evolution = buildEvolutionClient(evolutionInstance, evolutionUrl);
     if (evolution) {
       try {
         await evolution.createInstance();

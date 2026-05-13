@@ -250,6 +250,18 @@ export default async function EditStorePage({
                 Com DDI+DDD, sem espaços ou símbolos.
               </span>
             </label>
+            <label className="grid gap-2 text-sm font-medium text-slate-700 sm:col-span-2">
+              Servidor Evolution API (opcional)
+              <input
+                name="evolutionUrl"
+                defaultValue={agentConfig?.evolutionUrl ?? ""}
+                placeholder="https://evolution-api-2.up.railway.app"
+                className="rounded-2xl border border-slate-200 px-4 py-3 text-sm"
+              />
+              <span className="text-xs text-slate-400">
+                Deixe em branco para usar o servidor padrão. Preencha para distribuir lojas entre múltiplos servidores Evolution API.
+              </span>
+            </label>
           </div>
 
           {agentConfig?.isEnabled && agentConfig?.evolutionInstance && (
