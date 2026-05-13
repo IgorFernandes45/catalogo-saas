@@ -393,10 +393,9 @@ model AgentConfig {
   evolutionInstance   String?
   phoneNumber         String?
   connectionStatus    String   @default("disconnected")
-  deliveryFee         String?
+  deliveryZonesJson   String?
   deliveryFeeNote     String?
   deliveryTime        String?
-  deliveryArea        String?
   acceptedPaymentsJson String?
   openingHours        String?
   customInstructions  String?

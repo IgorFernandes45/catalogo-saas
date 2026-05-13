@@ -15,6 +15,19 @@ export default async function AgentPage({
 
   const config = await prisma.agentConfig.findUnique({
     where: { storeId: user.storeId! },
+    select: {
+      isEnabled: true,
+      agentName: true,
+      greetingMessage: true,
+      evolutionInstance: true,
+      connectionStatus: true,
+      deliveryZonesJson: true,
+      deliveryFeeNote: true,
+      deliveryTime: true,
+      acceptedPaymentsJson: true,
+      openingHours: true,
+      customInstructions: true,
+    },
   });
 
   return (

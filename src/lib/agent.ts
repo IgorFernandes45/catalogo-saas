@@ -44,10 +44,9 @@ async function buildStoreContext(storeId: string): Promise<string> {
     store.address ? `Endereço: ${store.address}` : "",
     ``,
     `## Entrega`,
-    config.deliveryFee ? `Taxa de entrega: ${config.deliveryFee}` : "",
-    config.deliveryFeeNote ? `Obs. entrega: ${config.deliveryFeeNote}` : "",
+    ...parseDeliveryZones(config.deliveryZonesJson),
     config.deliveryTime ? `Prazo de entrega: ${config.deliveryTime}` : "",
-    config.deliveryArea ? `Área de entrega: ${config.deliveryArea}` : "",
+    config.deliveryFeeNote ? `Obs.: ${config.deliveryFeeNote}` : "",
     ``,
     `## Formas de pagamento`,
     config.acceptedPaymentsJson
@@ -72,6 +71,20 @@ async function buildStoreContext(storeId: string): Promise<string> {
   ];
 
   return lines.filter((l) => l !== undefined).join("\n");
+}
+
+function parseDeliveryZones(json: string | null | undefined): string[] {
+  if (!json) return ["Taxa de entrega: consulte a loja."];
+  try {
+    const zones = JSON.parse(json) as { area: string; fee: string }[];
+    if (!zones.length) return [];
+    return [
+      "Taxas de entrega por zona:",
+      ...zones.map((z) => `  - ${z.area}: ${z.fee}`),
+    ];
+  } catch {
+    return [];
+  }
 }
 
 function parsePayments(json: string): string {

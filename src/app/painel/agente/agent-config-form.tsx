@@ -1,8 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Plus, Trash2 } from "lucide-react";
 
 import { saveAgentConfigAction } from "./actions";
+
+type DeliveryZone = { area: string; fee: string };
 
 type AgentConfig = {
   isEnabled: boolean;
@@ -10,10 +13,9 @@ type AgentConfig = {
   greetingMessage: string | null;
   evolutionInstance: string | null;
   connectionStatus: string;
-  deliveryFee: string | null;
+  deliveryZonesJson: string | null;
   deliveryFeeNote: string | null;
   deliveryTime: string | null;
-  deliveryArea: string | null;
   acceptedPaymentsJson: string | null;
   openingHours: string | null;
   customInstructions: string | null;
@@ -32,6 +34,13 @@ function parsePayments(json: string | null): string[] {
   catch { return []; }
 }
 
+function parseZones(json: string | null): DeliveryZone[] {
+  try {
+    const z = JSON.parse(json || "[]") as DeliveryZone[];
+    return z.length > 0 ? z : [{ area: "", fee: "" }];
+  } catch { return [{ area: "", fee: "" }]; }
+}
+
 type Tab = "conexao" | "entrega" | "pagamentos" | "treinamento";
 
 const TABS: { key: Tab; label: string }[] = [
@@ -40,6 +49,70 @@ const TABS: { key: Tab; label: string }[] = [
   { key: "pagamentos",  label: "Pagamentos" },
   { key: "treinamento", label: "Treinamento" },
 ];
+
+function DeliveryZoneEditor({ initial }: { initial: DeliveryZone[] }) {
+  const [zones, setZones] = useState<DeliveryZone[]>(initial);
+
+  const update = (i: number, field: keyof DeliveryZone, value: string) =>
+    setZones((z) => z.map((zone, idx) => idx === i ? { ...zone, [field]: value } : zone));
+
+  const add = () => setZones((z) => [...z, { area: "", fee: "" }]);
+
+  const remove = (i: number) =>
+    setZones((z) => z.length === 1 ? [{ area: "", fee: "" }] : z.filter((_, idx) => idx !== i));
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <label className="label-field mb-0">Zonas de entrega</label>
+        <button
+          type="button"
+          onClick={add}
+          className="flex items-center gap-1.5 rounded-xl border border-orange-200 bg-orange-50 px-3 py-1.5 text-xs font-medium text-orange-600 transition hover:bg-orange-100"
+        >
+          <Plus className="size-3.5" />
+          Adicionar zona
+        </button>
+      </div>
+
+      <div className="space-y-2">
+        {zones.map((zone, i) => (
+          <div key={i} className="flex items-center gap-2">
+            {/* hidden inputs so the form submits them */}
+            <input type="hidden" name={`zone_area_${i}`} value={zone.area} />
+            <input type="hidden" name={`zone_fee_${i}`} value={zone.fee} />
+            <input
+              type="text"
+              value={zone.area}
+              onChange={(e) => update(i, "area", e.target.value)}
+              placeholder="Ex.: Centro, Bairro X, até 5 km"
+              className="input-field flex-[2]"
+            />
+            <input
+              type="text"
+              value={zone.fee}
+              onChange={(e) => update(i, "fee", e.target.value)}
+              placeholder="Ex.: R$ 5,00 ou Grátis"
+              className="input-field flex-1"
+            />
+            <button
+              type="button"
+              onClick={() => remove(i)}
+              className="shrink-0 rounded-xl p-2 text-slate-400 transition hover:bg-red-50 hover:text-red-500"
+              aria-label="Remover zona"
+            >
+              <Trash2 className="size-4" />
+            </button>
+          </div>
+        ))}
+      </div>
+
+      <p className="text-xs text-slate-400">
+        Cada zona tem uma área (bairro, cidade, distância) e uma taxa de entrega correspondente.
+      </p>
+    </div>
+  );
+}
 
 export function AgentConfigForm({ config }: { config: AgentConfig }) {
   const [activeTab, setActiveTab] = useState<Tab>("conexao");
@@ -50,6 +123,7 @@ export function AgentConfigForm({ config }: { config: AgentConfig }) {
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const selectedPayments = parsePayments(config?.acceptedPaymentsJson ?? null);
+  const initialZones = parseZones(config?.deliveryZonesJson ?? null);
   const isConfigured = !!config?.evolutionInstance;
 
   const fetchStatus = useCallback(async () => {
@@ -73,9 +147,7 @@ export function AgentConfigForm({ config }: { config: AgentConfig }) {
     try {
       const res = await fetch("/api/agent/start-qr", { method: "POST" });
       const data = (await res.json()) as { qr?: string; error?: string };
-      if (data.qr) {
-        setQrCode(data.qr);
-      }
+      if (data.qr) setQrCode(data.qr);
     } finally {
       setQrLoading(false);
     }
@@ -98,9 +170,7 @@ export function AgentConfigForm({ config }: { config: AgentConfig }) {
   if (!config?.isEnabled) {
     return (
       <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-8 text-center">
-        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-200 text-2xl">
-          🤖
-        </div>
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-200 text-2xl">🤖</div>
         <p className="mt-4 font-semibold text-slate-800">Agente IA não habilitado</p>
         <p className="mt-1 text-sm text-slate-500">
           Entre em contato com o administrador do sistema para ativar o agente para esta loja.
@@ -132,7 +202,6 @@ export function AgentConfigForm({ config }: { config: AgentConfig }) {
       {/* ── Tab: Conexão ───────────────────────────────────── */}
       {activeTab === "conexao" && (
         <div className="space-y-4">
-          {/* Status */}
           <div className={`flex items-center justify-between rounded-2xl border px-5 py-4 ${statusConfig.bg}`}>
             <div className="flex items-center gap-3">
               <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${statusConfig.dot}`} />
@@ -163,7 +232,6 @@ export function AgentConfigForm({ config }: { config: AgentConfig }) {
                   <li>Escaneie o QR Code com a câmera.</li>
                 </ol>
               </div>
-
               <button
                 type="button"
                 onClick={fetchQrCode}
@@ -180,7 +248,6 @@ export function AgentConfigForm({ config }: { config: AgentConfig }) {
               <p className="font-semibold text-green-800">✓ WhatsApp conectado</p>
               <p className="mt-1 text-sm text-green-700">
                 O agente está ativo e respondendo mensagens automaticamente.
-                A sessão se mantém enquanto o celular tiver internet.
               </p>
             </div>
           )}
@@ -202,22 +269,15 @@ export function AgentConfigForm({ config }: { config: AgentConfig }) {
 
           {/* Entrega */}
           {activeTab === "entrega" && (
-            <div className="space-y-4">
+            <div className="space-y-5">
+              <DeliveryZoneEditor initial={initialZones} />
               <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <label className="label-field">Taxa de entrega</label>
-                  <input type="text" name="deliveryFee" defaultValue={config?.deliveryFee ?? ""} placeholder="Ex.: R$ 5,00 ou Grátis acima de R$ 80" className="input-field" />
-                </div>
                 <div>
                   <label className="label-field">Prazo de entrega</label>
                   <input type="text" name="deliveryTime" defaultValue={config?.deliveryTime ?? ""} placeholder="Ex.: 30 a 60 minutos" className="input-field" />
                 </div>
                 <div>
-                  <label className="label-field">Área de entrega</label>
-                  <input type="text" name="deliveryArea" defaultValue={config?.deliveryArea ?? ""} placeholder="Ex.: Centro, Bairro X, até 10 km" className="input-field" />
-                </div>
-                <div>
-                  <label className="label-field">Observação sobre entrega</label>
+                  <label className="label-field">Observação</label>
                   <input type="text" name="deliveryFeeNote" defaultValue={config?.deliveryFeeNote ?? ""} placeholder="Ex.: Retirada no local disponível" className="input-field" />
                 </div>
               </div>
@@ -246,9 +306,7 @@ export function AgentConfigForm({ config }: { config: AgentConfig }) {
               </div>
               <input type="hidden" name="agentName" value={config?.agentName ?? "Assistente"} />
               <input type="hidden" name="greetingMessage" value={config?.greetingMessage ?? ""} />
-              <input type="hidden" name="deliveryFee" value={config?.deliveryFee ?? ""} />
               <input type="hidden" name="deliveryTime" value={config?.deliveryTime ?? ""} />
-              <input type="hidden" name="deliveryArea" value={config?.deliveryArea ?? ""} />
               <input type="hidden" name="deliveryFeeNote" value={config?.deliveryFeeNote ?? ""} />
               <input type="hidden" name="openingHours" value={config?.openingHours ?? ""} />
               <input type="hidden" name="customInstructions" value={config?.customInstructions ?? ""} />
@@ -283,9 +341,7 @@ export function AgentConfigForm({ config }: { config: AgentConfig }) {
                 />
                 <p className="mt-1 text-xs text-slate-400">O agente seguirá estas instruções ao conversar com os clientes.</p>
               </div>
-              <input type="hidden" name="deliveryFee" value={config?.deliveryFee ?? ""} />
               <input type="hidden" name="deliveryTime" value={config?.deliveryTime ?? ""} />
-              <input type="hidden" name="deliveryArea" value={config?.deliveryArea ?? ""} />
               <input type="hidden" name="deliveryFeeNote" value={config?.deliveryFeeNote ?? ""} />
             </div>
           )}

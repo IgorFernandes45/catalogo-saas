@@ -13,10 +13,9 @@ export async function saveAgentConfigAction(formData: FormData) {
   const data = {
     agentName: String(formData.get("agentName") ?? "Assistente").trim() || "Assistente",
     greetingMessage: String(formData.get("greetingMessage") ?? "").trim() || null,
-    deliveryFee: String(formData.get("deliveryFee") ?? "").trim() || null,
+    deliveryZonesJson: buildDeliveryZonesJson(formData),
     deliveryFeeNote: String(formData.get("deliveryFeeNote") ?? "").trim() || null,
     deliveryTime: String(formData.get("deliveryTime") ?? "").trim() || null,
-    deliveryArea: String(formData.get("deliveryArea") ?? "").trim() || null,
     acceptedPaymentsJson: buildPaymentsJson(formData),
     openingHours: String(formData.get("openingHours") ?? "").trim() || null,
     customInstructions: String(formData.get("customInstructions") ?? "").trim() || null,
@@ -91,4 +90,16 @@ function buildPaymentsJson(formData: FormData): string {
   const custom = String(formData.get("paymentCustom") ?? "").trim();
   if (custom) selected.push(custom);
   return JSON.stringify(selected);
+}
+
+function buildDeliveryZonesJson(formData: FormData): string | null {
+  const zones: { area: string; fee: string }[] = [];
+  let i = 0;
+  while (formData.has(`zone_area_${i}`)) {
+    const area = String(formData.get(`zone_area_${i}`) ?? "").trim();
+    const fee = String(formData.get(`zone_fee_${i}`) ?? "").trim();
+    if (area || fee) zones.push({ area, fee });
+    i++;
+  }
+  return zones.length > 0 ? JSON.stringify(zones) : null;
 }
