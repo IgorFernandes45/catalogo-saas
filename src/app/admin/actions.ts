@@ -156,6 +156,12 @@ export async function saveStoreAgentAction(formData: FormData) {
       } catch {
         // Instance may already exist
       }
+      try {
+        const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://catalogo-saas-wine.vercel.app";
+        await evolution.setWebhook(`${appUrl}/api/agent/webhook?storeId=${storeId}`);
+      } catch {
+        // Webhook registration failure is non-fatal
+      }
     }
   }
 
