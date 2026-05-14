@@ -62,6 +62,26 @@ export async function registerWebhookAction() {
   }
 }
 
+// Returns void (no redirect) so it can be called from client without page reload
+export async function reregisterWebhookAction(_formData: FormData) {
+  const user = await requireStoreUser();
+  if (!user.storeId) return;
+
+  const config = await prisma.agentConfig.findUnique({
+    where: { storeId: user.storeId },
+    select: { evolutionInstance: true, evolutionUrl: true, webhookSecret: true },
+  });
+
+  const evolution = buildEvolutionClient(config?.evolutionInstance, config?.evolutionUrl);
+  if (!evolution) return;
+
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://catalogo-saas-wine.vercel.app";
+  const secretParam = config?.webhookSecret ? `&secret=${config.webhookSecret}` : "";
+  const webhookUrl = `${appUrl}/api/agent/webhook?storeId=${user.storeId}${secretParam}`;
+
+  await evolution.setWebhook(webhookUrl);
+}
+
 export async function connectWhatsAppAction() {
   const user = await requireStoreUser();
   if (!user.storeId) redirect("/painel");

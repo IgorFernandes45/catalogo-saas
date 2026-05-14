@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 
-import { saveAgentConfigAction } from "./actions";
+import { saveAgentConfigAction, reregisterWebhookAction } from "./actions";
 
 type DeliveryZone = { area: string; fee: string };
 
@@ -120,6 +120,8 @@ export function AgentConfigForm({ config }: { config: AgentConfig }) {
   const [qrCode, setQrCode] = useState<string | null>(null);
   const [qrLoading, setQrLoading] = useState(false);
   const [statusLoading, setStatusLoading] = useState(false);
+  const [webhookLoading, setWebhookLoading] = useState(false);
+  const [webhookMsg, setWebhookMsg] = useState<string | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const selectedPayments = parsePayments(config?.acceptedPaymentsJson ?? null);
@@ -244,11 +246,46 @@ export function AgentConfigForm({ config }: { config: AgentConfig }) {
           )}
 
           {connectionStatus === "open" && (
-            <div className="rounded-2xl border border-green-200 bg-green-50 px-5 py-4">
-              <p className="font-semibold text-green-800">✓ WhatsApp conectado</p>
-              <p className="mt-1 text-sm text-green-700">
-                O agente está ativo e respondendo mensagens automaticamente.
-              </p>
+            <div className="space-y-3">
+              <div className="rounded-2xl border border-green-200 bg-green-50 px-5 py-4">
+                <p className="font-semibold text-green-800">✓ WhatsApp conectado</p>
+                <p className="mt-1 text-sm text-green-700">
+                  O agente está ativo e respondendo mensagens automaticamente.
+                </p>
+              </div>
+
+              {/* Webhook re-register */}
+              <div className="rounded-2xl border border-slate-200 bg-white px-5 py-4">
+                <p className="text-sm font-medium text-slate-700">Webhook do agente</p>
+                <p className="mt-1 text-xs text-slate-400">
+                  Se o agente não estiver respondendo mensagens, clique abaixo para re-registrar o webhook.
+                </p>
+                <button
+                  type="button"
+                  disabled={webhookLoading}
+                  onClick={async () => {
+                    setWebhookLoading(true);
+                    setWebhookMsg(null);
+                    try {
+                      const fd = new FormData();
+                      await reregisterWebhookAction(fd);
+                      setWebhookMsg("✓ Webhook registrado com sucesso!");
+                    } catch {
+                      setWebhookMsg("Erro ao registrar webhook.");
+                    } finally {
+                      setWebhookLoading(false);
+                    }
+                  }}
+                  className="mt-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-medium text-slate-600 transition hover:border-orange-300 hover:text-orange-600 disabled:opacity-40"
+                >
+                  {webhookLoading ? "Registrando…" : "Re-registrar webhook"}
+                </button>
+                {webhookMsg && (
+                  <p className={`mt-2 text-xs font-medium ${webhookMsg.startsWith("✓") ? "text-green-600" : "text-red-500"}`}>
+                    {webhookMsg}
+                  </p>
+                )}
+              </div>
             </div>
           )}
 

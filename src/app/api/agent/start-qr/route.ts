@@ -12,7 +12,7 @@ export async function POST() {
 
   const config = await prisma.agentConfig.findUnique({
     where: { storeId: user.storeId },
-    select: { evolutionInstance: true, evolutionUrl: true },
+    select: { evolutionInstance: true, evolutionUrl: true, webhookSecret: true },
   });
 
   const evolution = buildEvolutionClient(config?.evolutionInstance, config?.evolutionUrl);
@@ -20,15 +20,32 @@ export async function POST() {
     return NextResponse.json({ error: "Agente não configurado." }, { status: 400 });
   }
 
-  // Check current status — if already open, no QR needed
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://catalogo-saas-wine.vercel.app";
+  const secretParam = config?.webhookSecret ? `&secret=${config.webhookSecret}` : "";
+  const webhookUrl = `${appUrl}/api/agent/webhook?storeId=${user.storeId}${secretParam}`;
+
+  // Helper: always (re-)register webhook so messages flow even on reconnect
+  const registerWebhook = async () => {
+    try {
+      await evolution.setWebhook(webhookUrl);
+    } catch {
+      // non-fatal — log for debug
+      console.error("[start-qr] setWebhook failed");
+    }
+  };
+
+  // Already connected — just ensure webhook is registered and return
   const currentStatus = await evolution.getStatus();
   if (currentStatus === "open") {
+    await registerWebhook();
     return NextResponse.json({ connected: true });
   }
 
-  // If not connected, try to get QR directly (v1 returns it synchronously)
+  // Try to get QR directly (v1 returns it synchronously when instance exists)
   const qr = await evolution.getQrCode();
   if (qr?.base64) {
+    // Register webhook every time we serve a QR so it's always up-to-date
+    await registerWebhook();
     const b64 = qr.base64;
     return NextResponse.json({
       qr: b64.startsWith("data:") ? b64 : `data:image/png;base64,${b64}`,
@@ -39,12 +56,7 @@ export async function POST() {
   try { await evolution.deleteInstance(); } catch { /* ignore */ }
   await new Promise((r) => setTimeout(r, 1500));
   await evolution.createInstance();
-
-  // Register webhook
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://catalogo-saas-wine.vercel.app";
-  try {
-    await evolution.setWebhook(`${appUrl}/api/agent/webhook?storeId=${user.storeId}`);
-  } catch { /* non-fatal */ }
+  await registerWebhook();
 
   // Poll up to 15s for QR
   for (let i = 0; i < 15; i++) {
