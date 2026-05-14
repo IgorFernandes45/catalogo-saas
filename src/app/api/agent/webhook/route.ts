@@ -49,16 +49,22 @@ export async function POST(request: Request) {
 
     const config = await prisma.agentConfig.findUnique({
       where: { storeId },
-      select: { isEnabled: true, evolutionInstance: true, evolutionUrl: true, webhookSecret: true },
+      select: { isEnabled: true, evolutionInstance: true, evolutionUrl: true },
     });
 
     if (!config?.isEnabled) return NextResponse.json({ ok: true });
 
-    // Validate secret when one is configured
-    if (config.webhookSecret) {
-      const secret = searchParams.get("secret");
-      if (secret !== config.webhookSecret) return NextResponse.json({ ok: true });
-    }
+    // Validate secret when one is configured — try separately so missing column doesn't break messaging
+    try {
+      const cfgSecret = await prisma.agentConfig.findUnique({
+        where: { storeId },
+        select: { webhookSecret: true },
+      });
+      if (cfgSecret?.webhookSecret) {
+        const secret = searchParams.get("secret");
+        if (secret !== cfgSecret.webhookSecret) return NextResponse.json({ ok: true });
+      }
+    } catch { /* column not yet migrated — skip secret validation */ }
 
     const evolution = buildEvolutionClient(config.evolutionInstance, config.evolutionUrl);
     if (!evolution) return NextResponse.json({ ok: true });

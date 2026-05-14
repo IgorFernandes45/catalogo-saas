@@ -10,9 +10,10 @@ export async function POST() {
     return NextResponse.json({ error: "Sem loja vinculada." }, { status: 403 });
   }
 
+  // Fetch config — select webhookSecret separately so a missing column doesn't kill the whole route
   const config = await prisma.agentConfig.findUnique({
     where: { storeId: user.storeId },
-    select: { evolutionInstance: true, evolutionUrl: true, webhookSecret: true },
+    select: { evolutionInstance: true, evolutionUrl: true },
   });
 
   const evolution = buildEvolutionClient(config?.evolutionInstance, config?.evolutionUrl);
@@ -20,8 +21,18 @@ export async function POST() {
     return NextResponse.json({ error: "Agente não configurado." }, { status: 400 });
   }
 
+  // Try to read webhookSecret — fail silently if column doesn't exist yet
+  let webhookSecret: string | null = null;
+  try {
+    const cfgExtra = await prisma.agentConfig.findUnique({
+      where: { storeId: user.storeId },
+      select: { webhookSecret: true },
+    });
+    webhookSecret = cfgExtra?.webhookSecret ?? null;
+  } catch { /* column not yet migrated — proceed without secret */ }
+
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://catalogo-saas-wine.vercel.app";
-  const secretParam = config?.webhookSecret ? `&secret=${config.webhookSecret}` : "";
+  const secretParam = webhookSecret ? `&secret=${webhookSecret}` : "";
   const webhookUrl = `${appUrl}/api/agent/webhook?storeId=${user.storeId}${secretParam}`;
 
   // Helper: always (re-)register webhook so messages flow even on reconnect

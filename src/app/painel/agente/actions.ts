@@ -69,14 +69,23 @@ export async function reregisterWebhookAction(_formData: FormData) {
 
   const config = await prisma.agentConfig.findUnique({
     where: { storeId: user.storeId },
-    select: { evolutionInstance: true, evolutionUrl: true, webhookSecret: true },
+    select: { evolutionInstance: true, evolutionUrl: true },
   });
 
   const evolution = buildEvolutionClient(config?.evolutionInstance, config?.evolutionUrl);
   if (!evolution) return;
 
+  let webhookSecret: string | null = null;
+  try {
+    const extra = await prisma.agentConfig.findUnique({
+      where: { storeId: user.storeId },
+      select: { webhookSecret: true },
+    });
+    webhookSecret = extra?.webhookSecret ?? null;
+  } catch { /* column not yet migrated */ }
+
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://catalogo-saas-wine.vercel.app";
-  const secretParam = config?.webhookSecret ? `&secret=${config.webhookSecret}` : "";
+  const secretParam = webhookSecret ? `&secret=${webhookSecret}` : "";
   const webhookUrl = `${appUrl}/api/agent/webhook?storeId=${user.storeId}${secretParam}`;
 
   await evolution.setWebhook(webhookUrl);
